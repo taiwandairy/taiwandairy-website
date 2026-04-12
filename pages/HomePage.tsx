@@ -122,34 +122,27 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">會務新知</h2>
             <div className="w-20 h-1 bg-accent mx-auto mb-6"></div>
           </div>
-          <div className="max-w-4xl mx-auto space-y-4">
-            {[
-              { title: '牛隻疾病及衛生防疫進階訓練班', date: '2026-03-16' },
-              { title: '2026 乳牛動物福利產業交流工作坊', date: '2026-03-16' },
-              { title: '因應氣候變遷之跨域調適治理與科研協作建構研討會', date: '2026-03-16' },
-            ].map((item, i) => (
-              <div
-                key={i}
-                onClick={() => onNavigate('news')}
-                className="flex items-center gap-4 p-5 bg-gray-warm rounded-xl hover:shadow-md transition cursor-pointer group"
-              >
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition">{item.title}</h3>
-                  <p className="text-sm text-gray-400 mt-1">{item.date}</p>
-                </div>
-                <svg className="w-5 h-5 text-gray-300 group-hover:text-primary transition flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <button
-              onClick={() => onNavigate('news')}
-              className="px-6 py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-primary hover:text-white transition"
+          <div className="max-w-4xl mx-auto">
+            <a
+              href="https://www.facebook.com/share/p/18EknQvsya/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-6 bg-gray-warm rounded-xl hover:shadow-md transition group"
             >
-              查看更多
-            </button>
+              <div className="flex flex-wrap items-center gap-3 mb-3">
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">人才培育</span>
+                <time className="text-sm text-gray-400">2026-04-07</time>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition">
+                2026 牧場人才培訓計畫｜第 11 屆招生中！
+              </h3>
+              <p className="text-gray-600 leading-relaxed mb-3">
+                全台灣共有 6,120 位獸醫師，近 70% 從事貓狗毛小孩醫療照顧。而每天在牧場守護大家蛋、奶、肉食物安全的畜牧獸醫，卻只有不到 6%、352 位！鮮乳坊成立以來就投入「牧場人才培訓計畫」，今年邁入第 11 年，已有 98 位國內外獸醫和動物科學系同學進到牧場體驗學習，超過 10 位參與同學在畢業後選擇乳牛相關工作。
+              </p>
+              <p className="text-primary text-sm font-medium group-hover:underline">
+                了解更多 &rarr;
+              </p>
+            </a>
           </div>
         </div>
       </section>
