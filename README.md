@@ -1,6 +1,8 @@
 # 台灣農酪產業永續發展協會 官方網站
 
-Taiwan Dairy Sustainability Association (TDSA) Official Website
+Taiwan Sustainable Dairy Development Association (TSDDA) Official Website
+
+🌐 https://taiwandairy.org.tw
 
 ## 技術架構
 
