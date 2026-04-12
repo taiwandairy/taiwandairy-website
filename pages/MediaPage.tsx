@@ -1,46 +1,12 @@
 import React from 'react';
+import { useSheetData } from '../hooks/useSheetData';
+import { fetchMediaItems } from '../utils/sheets';
 
 const YOUTUBE_CHANNEL = 'https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E8%BE%B2%E9%85%AA%E7%94%A2%E6%A5%AD%E6%B0%B8%E7%BA%8C%E7%99%BC%E5%B1%95';
 
-interface MediaItem {
-  id: string;
-  title: string;
-  date: string;
-  type: 'article' | 'video';
-  source: string;
-  summary: string;
-  link?: string;
-}
-
-const SAMPLE_MEDIA: MediaItem[] = [
-  {
-    id: '1',
-    title: '台灣農酪產業永續發展協會成立 產官學攜手推動產業轉型',
-    date: '2025-01-20',
-    type: 'article',
-    source: '農傳媒',
-    summary: '台灣農酪產業永續發展協會於日前正式成立，匯聚產官學研各界力量，致力推動國內酪農產業升級轉型與永續發展。',
-  },
-  {
-    id: '2',
-    title: '永續酪農的未來：從牧場到餐桌的綠色革命',
-    date: '2025-02-15',
-    type: 'video',
-    source: '協會自製',
-    summary: '深入探訪台灣模範牧場，了解永續經營理念如何在第一線落實，從飼養管理到碳足跡追蹤的完整故事。',
-    link: YOUTUBE_CHANNEL,
-  },
-  {
-    id: '3',
-    title: '專訪理事長韓宗諭：談台灣酪農產業的機遇與挑戰',
-    date: '2025-03-05',
-    type: 'article',
-    source: '產業人物誌',
-    summary: '本會理事長韓宗諭接受專訪，暢談台灣酪農產業面臨的國際競爭壓力與永續轉型機遇。',
-  },
-];
-
 export const MediaPage: React.FC = () => {
+  const { data: media, loading, error } = useSheetData('media', fetchMediaItems);
+
   return (
     <div>
       {/* Hero */}
@@ -79,65 +45,90 @@ export const MediaPage: React.FC = () => {
       {/* Media Grid */}
       <section className="py-12 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SAMPLE_MEDIA.map((item) => (
-              <article
-                key={item.id}
-                onClick={() => item.link && window.open(item.link, '_blank')}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group cursor-pointer"
-              >
-                {/* Thumbnail */}
-                <div className="aspect-video bg-gray-100 relative overflow-hidden">
-                  <div className="w-full h-full flex items-center justify-center bg-blue-50">
-                    {item.type === 'video' ? (
-                      <div className="text-center">
-                        <div className="w-16 h-16 mx-auto bg-red-600 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition">
-                          <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                          </svg>
+          {loading && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-pulse">
+                  <div className="aspect-video bg-gray-200"></div>
+                  <div className="p-5">
+                    <div className="h-3 bg-gray-200 rounded w-24 mb-3"></div>
+                    <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded w-full"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!loading && media.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {media.map((item, i) => (
+                <article
+                  key={i}
+                  onClick={() => item.link && window.open(item.link, '_blank')}
+                  className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group cursor-pointer"
+                >
+                  {/* Thumbnail */}
+                  <div className="aspect-video bg-gray-100 relative overflow-hidden">
+                    <div className="w-full h-full flex items-center justify-center bg-blue-50">
+                      {item.type === 'video' ? (
+                        <div className="text-center">
+                          <div className="w-16 h-16 mx-auto bg-red-600 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition">
+                            <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
+                          </div>
+                          <span className="text-xs text-gray-400">影片</span>
                         </div>
-                        <span className="text-xs text-gray-400">影片</span>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <svg className="w-12 h-12 mx-auto text-blue-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                        </svg>
-                        <span className="text-xs text-gray-400">報導</span>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="text-center">
+                          <svg className="w-12 h-12 mx-auto text-blue-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                          </svg>
+                          <span className="text-xs text-gray-400">報導</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="absolute top-3 left-3">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        item.type === 'video' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
+                      }`}>
+                        {item.type === 'video' ? '影片' : '報導'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="absolute top-3 left-3">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      item.type === 'video' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
-                    }`}>
-                      {item.type === 'video' ? '影片' : '報導'}
-                    </span>
-                  </div>
-                </div>
 
-                {/* Content */}
-                <div className="p-5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs text-gray-400">{item.date}</span>
-                    <span className="text-xs text-gray-300">|</span>
-                    <span className="text-xs text-primary font-medium">{item.source}</span>
+                  {/* Content */}
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs text-gray-400">{item.date}</span>
+                      <span className="text-xs text-gray-300">|</span>
+                      <span className="text-xs text-primary font-medium">{item.source}</span>
+                    </div>
+                    <h3 className="font-bold text-gray-900 mb-2 group-hover:text-primary transition leading-snug">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">{item.summary}</p>
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-2 group-hover:text-primary transition leading-snug">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-gray-600">{item.summary}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
 
-          <div className="mt-12 p-8 bg-cream rounded-xl border border-yellow-200 text-center">
-            <p className="text-gray-600 mb-1">更多媒體內容持續建置中</p>
-            <p className="text-sm text-gray-400">
-              未來將收錄以協會名義受訪的媒體報導，以及協會自製的影音內容。
-            </p>
-          </div>
+          {!loading && media.length === 0 && !error && (
+            <div className="p-8 bg-cream rounded-xl border border-yellow-200 text-center">
+              <p className="text-gray-600 mb-1">更多媒體內容持續建置中</p>
+              <p className="text-sm text-gray-400">
+                未來將收錄以協會名義受訪的媒體報導，以及協會自製的影音內容。
+              </p>
+            </div>
+          )}
+
+          {error && (
+            <div className="p-8 bg-red-50 rounded-xl border border-red-200 text-center">
+              <p className="text-gray-600">資料載入失敗，請稍後再試。</p>
+            </div>
+          )}
         </div>
       </section>
     </div>

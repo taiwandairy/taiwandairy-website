@@ -1,5 +1,7 @@
 import React from 'react';
 import type { Page } from '../types';
+import { useSheetData } from '../hooks/useSheetData';
+import { fetchNewsItems } from '../utils/sheets';
 
 interface HomePageProps {
   onNavigate: (page: Page) => void;
@@ -18,6 +20,9 @@ const CHARTER_POINTS = [
 ];
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
+  const { data: news, loading: newsLoading } = useSheetData('news', fetchNewsItems);
+  const latestNews = news[0];
+
   return (
     <div>
       {/* Hero Section */}
@@ -123,26 +128,43 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <div className="w-20 h-1 bg-accent mx-auto mb-6"></div>
           </div>
           <div className="max-w-4xl mx-auto">
-            <a
-              href="https://www.facebook.com/share/p/18EknQvsya/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block p-6 bg-gray-warm rounded-xl hover:shadow-md transition group"
-            >
-              <div className="flex flex-wrap items-center gap-3 mb-3">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">人才培育</span>
-                <time className="text-sm text-gray-400">2026-04-07</time>
+            {newsLoading && (
+              <div className="p-6 bg-gray-warm rounded-xl animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-24 mb-3"></div>
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition">
-                2026 牧場人才培訓計畫｜第 11 屆招生中！
-              </h3>
-              <p className="text-gray-600 leading-relaxed mb-3">
-                全台灣共有 6,120 位獸醫師，近 70% 從事貓狗毛小孩醫療照顧。而每天在牧場守護大家蛋、奶、肉食物安全的畜牧獸醫，卻只有不到 6%、352 位！鮮乳坊成立以來就投入「牧場人才培訓計畫」，今年邁入第 11 年，已有 98 位國內外獸醫和動物科學系同學進到牧場體驗學習，超過 10 位參與同學在畢業後選擇乳牛相關工作。
-              </p>
-              <p className="text-primary text-sm font-medium group-hover:underline">
-                了解更多 &rarr;
-              </p>
-            </a>
+            )}
+
+            {!newsLoading && latestNews && (
+              <a
+                href={latestNews.link || '#news'}
+                target={latestNews.link ? '_blank' : undefined}
+                rel={latestNews.link ? 'noopener noreferrer' : undefined}
+                className="block p-6 bg-gray-warm rounded-xl hover:shadow-md transition group"
+              >
+                <div className="flex flex-wrap items-center gap-3 mb-3">
+                  {latestNews.tag && (
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">{latestNews.tag}</span>
+                  )}
+                  <time className="text-sm text-gray-400">{latestNews.date}</time>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition">
+                  {latestNews.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed mb-3">{latestNews.summary}</p>
+                <p className="text-primary text-sm font-medium group-hover:underline">
+                  {latestNews.linkText} &rarr;
+                </p>
+              </a>
+            )}
+
+            {!newsLoading && !latestNews && (
+              <div className="p-6 bg-gray-warm rounded-xl text-center">
+                <p className="text-gray-500">最新消息即將上線</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
