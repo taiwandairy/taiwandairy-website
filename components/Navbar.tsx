@@ -26,20 +26,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
           {/* Logo */}
           <button
             onClick={() => handleNav('home')}
-            className="flex items-center gap-3 hover:opacity-90 transition"
+            className="flex items-center hover:opacity-90 transition"
+            aria-label="台灣農酪產業永續發展協會"
           >
             <img
-              src="/images/logo.png"
-              alt="協會LOGO"
+              src="/images/logo-horizontal.jpg"
+              alt="台灣農酪產業永續發展協會 Taiwan Dairy Farming Sustainable Development Association"
               className="h-10 md:h-14 w-auto"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
             />
-            <div className="hidden sm:block">
-              <div className="text-sm md:text-base font-bold leading-tight">台灣農酪產業永續發展協會</div>
-              <div className="text-xs text-blue-200 leading-tight">Taiwan Dairy Farming Sustainable Development Association</div>
-            </div>
           </button>
 
           {/* Desktop Nav */}
