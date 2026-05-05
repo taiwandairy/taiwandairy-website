@@ -44,7 +44,7 @@ export const NewsPage: React.FC = () => {
                     <time className="text-sm text-gray-400">{item.date}</time>
                   </div>
                   <h2 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h2>
-                  <p className="text-gray-600 leading-relaxed mb-4">{item.summary}</p>
+                  <p className="text-gray-600 leading-relaxed mb-4 whitespace-pre-line">{item.summary}</p>
                   {item.link && (
                     <a
                       href={item.link}
