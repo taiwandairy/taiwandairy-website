@@ -3,7 +3,9 @@ const NEWS_GID = '1743163530';
 const MEDIA_GID = '1656517806';
 
 function buildCsvUrl(gid: string): string {
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}`;
+  // headers=1 強制 gviz 只把第 1 行當表頭；不加的話 gviz 會根據儲存格換行 heuristic 猜表頭行數，
+  // 一旦摘要欄有多行內容，整張表會被壓成單列導致前端解析後 0 筆。
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}&headers=1`;
 }
 
 function parseCSV(text: string): string[][] {
