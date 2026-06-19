@@ -2,10 +2,14 @@ const SHEET_ID = '1f3aLrPoWjBhXETAtBJrtuaOCpqyjMDDcDYmWKwgeWTE';
 const NEWS_GID = '1743163530';
 const MEDIA_GID = '1656517806';
 
-function buildCsvUrl(gid: string): string {
+// 特色鮮乳品牌資料來自獨立的 Google 表單回覆試算表（會持續新增）
+const DAIRY_SHEET_ID = '1U-u178hQijvH3ZUPW9wVS1u3U9di5gCjFqOEe4rjTgA';
+const DAIRY_GID = '1883388637';
+
+function buildCsvUrl(gid: string, sheetId: string = SHEET_ID): string {
   // headers=1 強制 gviz 只把第 1 行當表頭；不加的話 gviz 會根據儲存格換行 heuristic 猜表頭行數，
   // 一旦摘要欄有多行內容，整張表會被壓成單列導致前端解析後 0 筆。
-  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${gid}&headers=1`;
+  return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}&headers=1`;
 }
 
 function parseCSV(text: string): string[][] {
@@ -114,4 +118,84 @@ export async function fetchMediaItems(): Promise<SheetMediaItem[]> {
       link: r['連結'] || '',
     }))
     .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+// ===== 特色鮮乳品牌 =====
+
+export interface SheetDairyBrand {
+  company: string;       // 公司全名
+  brand: string;         // 品牌名稱
+  slogan: string;        // 一句 slogan
+  intro: string;         // 品牌簡介
+  products: string;      // 提供之產品
+  origin: string;        // 乳源牧場 / 產地（原始字串）
+  certifications: string[]; // 認證／標章
+  channels: string;      // 可購買通路
+  website: string;       // 官網
+  social: string;        // 社群
+  video: string;         // 影音
+  region: string;        // 推斷出的縣市（給地圖用）
+}
+
+// 鄉鎮 → 縣市（比縣市名更精確，優先比對）
+const TOWNSHIP_TO_COUNTY: Record<string, string> = {
+  柳營: '台南', 崙背: '雲林', 福興: '彰化', 竹南: '苗栗',
+  阿蓮: '高雄', 民雄: '嘉義', 初鹿: '台東',
+};
+const COUNTIES = [
+  '台北', '新北', '基隆', '桃園', '新竹', '苗栗', '台中', '彰化', '南投',
+  '雲林', '嘉義', '台南', '高雄', '屏東', '宜蘭', '花蓮', '台東', '澎湖', '金門', '連江',
+];
+// 表單「乳源/產地」欄位陸續補齊前，少數品牌文字判讀不到，先用已知公開事實補位（之後表單填了會自動覆蓋）
+const BRAND_REGION_FALLBACK: Record<string, string> = {
+  高大牧場: '高雄', 綠盈牧場: '嘉義',
+};
+
+function inferRegion(brand: string, origin: string, intro: string, company: string): string {
+  const text = `${origin} ${intro} ${company}`.replace(/臺/g, '台');
+  for (const [town, county] of Object.entries(TOWNSHIP_TO_COUNTY)) {
+    if (text.includes(town)) return county;
+  }
+  for (const c of COUNTIES) {
+    if (text.includes(c)) return c;
+  }
+  return BRAND_REGION_FALLBACK[brand] || '';
+}
+
+// 表單回覆的表頭是「1-2. 品牌名稱」這種帶序號前綴的字串，用前綴比對較穩
+function pick(row: Record<string, string>, prefix: string): string {
+  const key = Object.keys(row).find(k => k.trim().startsWith(prefix));
+  return key ? (row[key] || '').trim() : '';
+}
+
+export async function fetchDairyBrands(): Promise<SheetDairyBrand[]> {
+  const res = await fetch(buildCsvUrl(DAIRY_GID, DAIRY_SHEET_ID));
+  if (!res.ok) throw new Error('Failed to fetch dairy brands');
+  const text = await res.text();
+  const rows = csvToObjects(text);
+  return rows
+    .map(r => {
+      const brand = pick(r, '1-2');
+      const origin = pick(r, '2-2');
+      const intro = pick(r, '1-4');
+      const company = pick(r, '1-1');
+      return {
+        company,
+        brand,
+        slogan: pick(r, '1-3'),
+        intro,
+        products: pick(r, '2-1'),
+        origin,
+        certifications: pick(r, '2-3')
+          .split(/[,、，]/)
+          .map(s => s.trim())
+          .filter(Boolean),
+        channels: pick(r, '2-4'),
+        website: pick(r, '3-1'),
+        social: pick(r, '3-2'),
+        video: pick(r, '3-3'),
+        region: inferRegion(brand, origin, intro, company),
+      };
+    })
+    .filter(b => b.brand);
 }

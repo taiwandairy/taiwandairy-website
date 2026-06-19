@@ -70,6 +70,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
               )}
             </div>
 
+            <NavLink active={isActive('dairy')} onClick={() => handleNav('dairy')}>特色鮮乳</NavLink>
+            <NavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</NavLink>
             <NavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</NavLink>
             <NavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</NavLink>
             <NavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</NavLink>
@@ -100,6 +102,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <div className="text-xs text-blue-300 px-3 pt-3 pb-1 font-medium uppercase tracking-wide">認識協會</div>
             <MobileNavLink active={isActive('charter')} onClick={() => handleNav('charter')}>協會章程</MobileNavLink>
             <div className="border-t border-blue-800 my-2"></div>
+            <MobileNavLink active={isActive('dairy')} onClick={() => handleNav('dairy')}>特色鮮乳</MobileNavLink>
+            <MobileNavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</MobileNavLink>
             <MobileNavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</MobileNavLink>
             <MobileNavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</MobileNavLink>
             <MobileNavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</MobileNavLink>
