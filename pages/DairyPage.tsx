@@ -55,6 +55,7 @@ const BRAND_IMAGES: Record<string, string> = {
   幸運兒鮮乳: '/images/dairy/xingyuner.jpg',
   許慶良鮮乳: '/images/dairy/xuqingliang.jpg',
   桂芳牧場: '/images/dairy/guifang.jpg',
+  '柳營鮮乳/六甲田莊/母傳優格': '/images/dairy/taiwanranch.jpg',
 };
 function brandImage(brand: string): string {
   return BRAND_IMAGES[brand.trim()] || '';
