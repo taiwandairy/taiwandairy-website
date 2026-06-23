@@ -188,7 +188,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 mb-1">協會地址</h3>
-                  <p className="text-gray-600 text-sm">臺北市內湖區內湖路二段311號11樓之1</p>
+                  <p className="text-gray-600 text-sm">新北市新莊區新北大道二段312號10樓</p>
                 </div>
               </div>
 
