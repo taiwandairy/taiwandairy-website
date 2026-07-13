@@ -7,6 +7,14 @@ const MEDIA_GID = '1656517806';
 const DAIRY_SHEET_ID = '1BZdz1D9DxUNyO6uhMa-lwDT6ln1jfECqq2JMjEhHlAQ';
 const DAIRY_GID = '1629092294';
 
+export function safeHttpUrl(url: string): string {
+  const trimmed = url.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+  return '';
+}
+
 function buildCsvUrl(gid: string, sheetId: string = SHEET_ID): string {
   // headers=1 強制 gviz 只把第 1 行當表頭；不加的話 gviz 會根據儲存格換行 heuristic 猜表頭行數，
   // 一旦摘要欄有多行內容，整張表會被壓成單列導致前端解析後 0 筆。
