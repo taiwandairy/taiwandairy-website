@@ -56,6 +56,8 @@ const BRAND_IMAGES: Record<string, string> = {
   許慶良鮮乳: '/images/dairy/xuqingliang.jpg',
   桂芳牧場: '/images/dairy/guifang.jpg',
   '柳營鮮乳/六甲田莊/母傳優格': '/images/dairy/taiwanranch.jpg',
+  禾香鮮乳: '/images/dairy/hesiang.jpg',
+  台農乳品: '/images/dairy/tainong.jpg',
 };
 function brandImage(brand: string): string {
   return BRAND_IMAGES[brand.trim()] || '';

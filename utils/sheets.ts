@@ -176,7 +176,8 @@ export async function fetchDairyBrands(): Promise<SheetDairyBrand[]> {
   return rows
     .map(r => {
       const brand = pick(r, '1-2');
-      const origin = pick(r, '2-2');
+      const origin = pick(r, '2-2');   // 2-2 乳源產地（驅動地圖分區）
+      const farm = pick(r, '2-4');     // 2-4 乳源牧場（表單改版後新分出的欄位）
       const intro = pick(r, '1-4');
       const company = pick(r, '1-1');
       return {
@@ -185,12 +186,14 @@ export async function fetchDairyBrands(): Promise<SheetDairyBrand[]> {
         slogan: pick(r, '1-3'),
         intro,
         products: pick(r, '2-1'),
-        origin,
-        certifications: pick(r, '2-3')
+        // 顯示用：有分開填牧場就併成「產地（牧場）」，否則只顯示產地
+        origin: farm && origin ? `${origin}（${farm}）` : (origin || farm),
+        // 認證：表單在乳源段插入「乳源類型/乳源牧場」後，認證欄由 2-3 移到 2-5
+        certifications: pick(r, '2-5')
           .split(/[,、，]/)
           .map(s => s.trim())
           .filter(Boolean),
-        channels: pick(r, '2-4'),
+        channels: pick(r, '2-6'),   // 可購買通路由 2-4 移到 2-6
         website: pick(r, '3-1'),
         social: pick(r, '3-2'),
         video: pick(r, '3-3'),
