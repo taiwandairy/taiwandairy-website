@@ -11,6 +11,25 @@ const ANNUAL_REPORTS = [
   { year: 2024, title: '113 年度人才培育計畫成果報告', link: '#' },
 ];
 
+// 學生來自哪裡（累計受訓學員的來源校系）
+const SCHOOLS_TW = [
+  { name: '國立臺灣大學', count: 43 },
+  { name: '國立中興大學', count: 17 },
+  { name: '國立嘉義大學', count: 16 },
+  { name: '亞洲大學', count: 12 },
+  { name: '國立屏東科技大學', count: 8 },
+  { name: '東海大學', count: 3 },
+  { name: '國立宜蘭大學', count: 3 },
+];
+
+const SCHOOLS_INTL = [
+  { flag: '🇦🇺', name: '墨爾本大學', count: 1 },
+  { flag: '🇦🇺', name: '雪梨大學', count: 1 },
+  { flag: '🇮🇪', name: '都柏林大學', count: 1 },
+  { flag: '🇭🇰', name: '香港', count: 1 },
+  { flag: '🇦🇺', name: '昆士蘭大學', count: null },
+];
+
 export const TrainingPage: React.FC = () => {
   return (
     <div>
@@ -92,8 +111,55 @@ export const TrainingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Annual Reports */}
+      {/* 學生來自哪裡 */}
       <section className="py-12 md:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">學生來自哪裡</h2>
+            <div className="w-20 h-1 bg-accent mx-auto mb-6"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              來自台灣各地的獸醫與動物科學學生，以及越來越多來自海外的學員。
+            </p>
+          </div>
+
+          {/* 台灣 */}
+          <div className="mb-10">
+            <h3 className="text-sm font-bold text-gray-500 tracking-wider mb-4">台灣</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {SCHOOLS_TW.map((s, i) => (
+                <div key={i} className="relative bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4">
+                  <span className="absolute top-3 right-3 text-xs font-bold text-accent bg-gray-warm rounded-full px-2 py-0.5">{s.count}</span>
+                  <div className="text-base font-bold text-gray-900 pr-8">{s.name}</div>
+                  <div className="text-xs text-gray-400 mt-1">累計 {s.count} 位學員</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 海外 */}
+          <div>
+            <h3 className="text-sm font-bold text-gray-500 tracking-wider mb-4">海外</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {SCHOOLS_INTL.map((s, i) => (
+                <div key={i} className="relative bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4">
+                  {s.count !== null && (
+                    <span className="absolute top-3 right-3 text-xs font-bold text-accent bg-gray-warm rounded-full px-2 py-0.5">{s.count}</span>
+                  )}
+                  <div className="text-lg mb-1">{s.flag}</div>
+                  <div className="text-base font-bold text-gray-900 pr-8">{s.name}</div>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+              數字為累計參與牧場實習的學員人數。國際交流的更多內容，見{' '}
+              <a href="#exchange" className="text-primary font-medium hover:underline">產業交流</a> 分頁。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Annual Reports */}
+      <section className="py-12 md:py-20 bg-gray-warm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">歷年成果報告</h2>

@@ -74,6 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <NavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</NavLink>
             <NavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</NavLink>
             <NavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</NavLink>
+            <NavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</NavLink>
             <NavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</NavLink>
           </nav>
 
@@ -106,6 +107,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <MobileNavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</MobileNavLink>
             <MobileNavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</MobileNavLink>
             <MobileNavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</MobileNavLink>
+            <MobileNavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</MobileNavLink>
             <MobileNavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</MobileNavLink>
           </div>
         </div>
