@@ -53,7 +53,7 @@ const App: React.FC = () => {
     switch (currentPage) {
       case 'home': return <HomePage onNavigate={navigate} />;
       case 'charter': return <CharterPage />;
-      case 'team': return <HomePage onNavigate={navigate} />;
+      case 'team': return <TeamPage />;
       case 'news': return <NewsPage />;
       case 'training': return <TrainingPage />;
       case 'media': return <MediaPage />;

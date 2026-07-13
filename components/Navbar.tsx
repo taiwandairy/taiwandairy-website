@@ -66,6 +66,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
                   >
                     協會章程
                   </button>
+                  <button
+                    onClick={() => handleNav('team')}
+                    className={`block w-full text-left px-4 py-2 text-sm transition ${
+                      isActive('team') ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-primary'
+                    }`}
+                  >
+                    團隊介紹
+                  </button>
                 </div>
               )}
             </div>
@@ -102,6 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <MobileNavLink active={isActive('home')} onClick={() => handleNav('home')}>首頁</MobileNavLink>
             <div className="text-xs text-blue-300 px-3 pt-3 pb-1 font-medium uppercase tracking-wide">認識協會</div>
             <MobileNavLink active={isActive('charter')} onClick={() => handleNav('charter')}>協會章程</MobileNavLink>
+            <MobileNavLink active={isActive('team')} onClick={() => handleNav('team')}>團隊介紹</MobileNavLink>
             <div className="border-t border-blue-800 my-2"></div>
             <MobileNavLink active={isActive('dairy')} onClick={() => handleNav('dairy')}>特色鮮乳</MobileNavLink>
             <MobileNavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</MobileNavLink>
