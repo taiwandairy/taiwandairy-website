@@ -162,7 +162,7 @@ export const TrainingPage: React.FC = () => {
       <section className="py-12 md:py-20 bg-gray-warm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">認識執行秘書</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">認識執行團隊</h2>
             <div className="w-20 h-1 bg-accent mx-auto"></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center">
@@ -177,7 +177,7 @@ export const TrainingPage: React.FC = () => {
               <div className="text-xs font-bold tracking-wider text-accent mb-2">執行秘書 · 台灣農酪產業永續發展協會</div>
               <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">張庭瑄</h3>
               <p className="text-gray-600 leading-relaxed">
-                張庭瑄統籌協會人才培育計畫的各項安排——媒合牧場與學校、聯繫實習學生，並推進計畫的日常運作，讓每一梯次的實習都能順利進行。有意了解或參與計畫的學校與同學，都歡迎與她聯繫。
+                統籌協會人才培育計畫的各項安排——媒合牧場與學校、聯繫實習學生，並推進計畫的日常運作，有意了解或參與計畫的學校與同學，歡迎聯繫。
               </p>
             </div>
           </div>
