@@ -19,8 +19,11 @@ export const Footer: React.FC = () => {
             <h3 className="text-white font-bold text-lg mb-3">快速連結</h3>
             <ul className="space-y-2 text-sm">
               <li><a href="#charter" className="hover:text-white transition">協會章程</a></li>
+              <li><a href="#dairy" className="hover:text-white transition">特色鮮乳</a></li>
+              <li><a href="#tasting" className="hover:text-white transition">風味品鑑</a></li>
               <li><a href="#news" className="hover:text-white transition">會務新知</a></li>
               <li><a href="#training" className="hover:text-white transition">人才培育</a></li>
+              <li><a href="#exchange" className="hover:text-white transition">產業交流</a></li>
               <li><a href="#media" className="hover:text-white transition">影音媒體</a></li>
             </ul>
           </div>
