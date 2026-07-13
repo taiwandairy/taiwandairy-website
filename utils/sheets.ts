@@ -2,9 +2,10 @@ const SHEET_ID = '1f3aLrPoWjBhXETAtBJrtuaOCpqyjMDDcDYmWKwgeWTE';
 const NEWS_GID = '1743163530';
 const MEDIA_GID = '1656517806';
 
-// 特色鮮乳品牌資料來自獨立的 Google 表單回覆試算表（會持續新增）
-const DAIRY_SHEET_ID = '1U-u178hQijvH3ZUPW9wVS1u3U9di5gCjFqOEe4rjTgA';
-const DAIRY_GID = '1883388637';
+// 特色鮮乳品牌資料來自「網站發布用」試算表（只含公開欄位；原表單回覆表含洽談人個資、已改為私人）
+// 有新品牌入會時，需從原回覆表同步公開欄位到這張發布表
+const DAIRY_SHEET_ID = '1BZdz1D9DxUNyO6uhMa-lwDT6ln1jfECqq2JMjEhHlAQ';
+const DAIRY_GID = '1629092294';
 
 function buildCsvUrl(gid: string, sheetId: string = SHEET_ID): string {
   // headers=1 強制 gviz 只把第 1 行當表頭；不加的話 gviz 會根據儲存格換行 heuristic 猜表頭行數，
