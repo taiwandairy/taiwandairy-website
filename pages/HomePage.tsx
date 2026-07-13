@@ -8,15 +8,15 @@ interface HomePageProps {
 }
 
 const CHARTER_POINTS = [
-  { icon: '/images/icons/icon-1.png', title: '推動產業升級與轉型輔導', desc: '協助農酪產業導入現代化管理與技術，推動轉型升級' },
-  { icon: '/images/icons/icon-2.png', title: '建立「特色鮮乳與農產」差異化', desc: '打造在地特色鮮乳與農產品牌，提升市場競爭力' },
-  { icon: '/images/icons/icon-3.png', title: '深化食農教育與社會連結', desc: '推廣食農教育，加強產業與社會大眾的互動連結' },
-  { icon: '/images/icons/icon-4.png', title: '媒合商務應用與供應鏈整合', desc: '促進產業上下游合作，整合供應鏈資源與商務媒合' },
-  { icon: '/images/icons/icon-5.png', title: '驅動產品創新與產業價值優化', desc: '鼓勵產品研發創新，提升農酪產業整體附加價值' },
-  { icon: '/images/icons/icon-6.png', title: '建構產業智庫與政策研究', desc: '建立產業研究智庫，提供政策建議與產業趨勢分析' },
-  { icon: '/images/icons/icon-7.png', title: '承接政府委辦與專案計畫', desc: '執行政府委託專案，落實產業輔導與發展計畫' },
-  { icon: '/images/icons/icon-8.png', title: '促進國際交流與產學合作', desc: '推動國際產業交流，強化產學研合作與技術引進' },
-  { icon: '/images/icons/icon-9.png', title: '維護會員福祉與辦理其他符合本會宗旨之事項', desc: '保障會員權益，推動一切符合協會永續發展宗旨之事務' },
+  { title: '推動產業升級與轉型輔導', desc: '協助農酪產業導入現代化管理與技術，推動轉型升級' },
+  { title: '建立「特色鮮乳與農產」差異化', desc: '打造在地特色鮮乳與農產品牌，提升市場競爭力' },
+  { title: '深化食農教育與社會連結', desc: '推廣食農教育，加強產業與社會大眾的互動連結' },
+  { title: '媒合商務應用與供應鏈整合', desc: '促進產業上下游合作，整合供應鏈資源與商務媒合' },
+  { title: '驅動產品創新與產業價值優化', desc: '鼓勵產品研發創新，提升農酪產業整體附加價值' },
+  { title: '建構產業智庫與政策研究', desc: '建立產業研究智庫，提供政策建議與產業趨勢分析' },
+  { title: '承接政府委辦與專案計畫', desc: '執行政府委託專案，落實產業輔導與發展計畫' },
+  { title: '促進國際交流與產學合作', desc: '推動國際產業交流，強化產學研合作與技術引進' },
+  { title: '維護會員福祉與辦理其他符合本會宗旨之事項', desc: '保障會員權益，推動一切符合協會永續發展宗旨之事務' },
 ];
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
@@ -97,20 +97,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 key={i}
                 className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition group"
               >
-                <div className="w-16 h-16 mb-4 flex items-center justify-center">
-                  <img
-                    src={point.icon}
-                    alt={point.title}
-                    className="w-16 h-16 object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const numEl = document.createElement('div');
-                      numEl.className = 'w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white text-xl font-bold';
-                      numEl.textContent = String(i + 1);
-                      target.parentElement!.appendChild(numEl);
-                    }}
-                  />
+                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white text-xl font-bold mb-4">
+                  {i + 1}
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2 group-hover:text-primary transition">{point.title}</h3>
                 <p className="text-sm text-gray-600">{point.desc}</p>
