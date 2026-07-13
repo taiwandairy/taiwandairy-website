@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useSheetData } from '../hooks/useSheetData';
-import { fetchDairyBrands } from '../utils/sheets';
+import { fetchDairyBrands, safeHttpUrl } from '../utils/sheets';
 import type { SheetDairyBrand } from '../utils/sheets';
 import { TaiwanMap } from '../components/TaiwanMap';
 
@@ -254,9 +254,9 @@ export const DairyPage: React.FC = () => {
 };
 
 const BrandModal: React.FC<{ brand: SheetDairyBrand; onClose: () => void }> = ({ brand, onClose }) => {
-  const website = validUrl(brand.website);
-  const social = validUrl(brand.social);
-  const video = validUrl(brand.video);
+  const website = safeHttpUrl(brand.website);
+  const social = safeHttpUrl(brand.social);
+  const video = safeHttpUrl(brand.video);
   const img = brandImage(brand.brand);
 
   return (

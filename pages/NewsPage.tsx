@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSheetData } from '../hooks/useSheetData';
-import { fetchNewsItems } from '../utils/sheets';
+import { fetchNewsItems, safeHttpUrl } from '../utils/sheets';
 
 export const NewsPage: React.FC = () => {
   const { data: news, loading, error } = useSheetData('news', fetchNewsItems);
@@ -45,9 +45,9 @@ export const NewsPage: React.FC = () => {
                   </div>
                   <h2 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h2>
                   <p className="text-gray-600 leading-relaxed mb-4 whitespace-pre-line">{item.summary}</p>
-                  {item.link && (
+                  {safeHttpUrl(item.link) && (
                     <a
-                      href={item.link}
+                      href={safeHttpUrl(item.link)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-light transition"
