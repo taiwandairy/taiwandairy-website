@@ -5,6 +5,7 @@ import type { SheetPromotionItem } from '../utils/sheets';
 
 export const PromotionPage: React.FC = () => {
   const { data: items, loading, error } = useSheetData('promotion', fetchPromotionItems);
+  const [zoom, setZoom] = useState<{ src: string; name: string } | null>(null);
 
   return (
     <div>
@@ -37,7 +38,7 @@ export const PromotionPage: React.FC = () => {
           {!loading && items.length > 0 && (
             <div className="grid md:grid-cols-2 gap-6">
               {items.map((item, i) => (
-                <PromotionCard key={i} item={item} />
+                <PromotionCard key={i} item={item} onZoom={(src, name) => setZoom({ src, name })} />
               ))}
             </div>
           )}
@@ -55,28 +56,70 @@ export const PromotionPage: React.FC = () => {
           )}
         </div>
       </section>
+
+      {/* 圖片放大 lightbox（沿用 TastingPage 模式）：卡片縮圖有裁切，點圖看完整海報 */}
+      {zoom && (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4" onClick={() => setZoom(null)}>
+          <button
+            onClick={() => setZoom(null)}
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center"
+            aria-label="關閉"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <img src={zoom.src} alt={zoom.name} className="max-w-full max-h-[90vh] rounded-lg shadow-2xl" onClick={e => e.stopPropagation()} />
+        </div>
+      )}
     </div>
   );
 };
 
-const PromotionCard: React.FC<{ item: SheetPromotionItem }> = ({ item }) => {
+const PromotionCard: React.FC<{
+  item: SheetPromotionItem;
+  onZoom: (src: string, name: string) => void;
+}> = ({ item, onZoom }) => {
   // 圖片來源是各主辦單位的外部連結，掛掉時整塊隱藏、卡片降級為純文字版
   const [imgFailed, setImgFailed] = useState(false);
+  // 直式海報（多為場次表／文字資訊型）橫幅裁切會看不到內容，改放卡片左側長條欄
+  const [portrait, setPortrait] = useState(false);
   const img = safeHttpUrl(item.image);
   const link = safeHttpUrl(item.link);
+  const showImg = img && !imgFailed;
 
   return (
-    <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-      {img && !imgFailed && (
-        <div className="h-44 overflow-hidden bg-gray-100">
+    <article
+      className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col ${
+        showImg && portrait ? 'sm:flex-row' : ''
+      }`}
+    >
+      {showImg && (
+        <button
+          type="button"
+          onClick={() => onZoom(img, item.name)}
+          aria-label={`放大檢視「${item.name}」活動圖片`}
+          className={`relative overflow-hidden bg-gray-100 cursor-zoom-in group flex-shrink-0 ${
+            portrait ? 'h-56 sm:h-auto sm:w-44 sm:self-stretch' : 'h-44'
+          }`}
+        >
           <img
             src={img}
             alt={item.name}
             loading="lazy"
             className="w-full h-full object-cover"
+            onLoad={e => {
+              const t = e.currentTarget;
+              if (t.naturalHeight > t.naturalWidth * 1.15) setPortrait(true);
+            }}
             onError={() => setImgFailed(true)}
           />
-        </div>
+          <span className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-black/45 text-white flex items-center justify-center group-hover:bg-black/65 transition">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0zM11 8v6M8 11h6" />
+            </svg>
+          </span>
+        </button>
       )}
       <div className="p-6 flex flex-col flex-1">
         <div className="flex flex-wrap items-center gap-2 mb-3">
