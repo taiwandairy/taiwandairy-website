@@ -124,6 +124,13 @@ export interface SheetPromotionItem {
 }
 
 export async function fetchPromotionItems(): Promise<SheetPromotionItem[]> {
+  // 用瀏覽器本地日期（台灣使用者即台灣時區），不用 toISOString 以免 UTC 差 8 小時跨日
+  const now = new Date();
+  const today = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+  ].join('-');
   const res = await fetch(buildCsvUrl(PROMOTION_GID));
   if (!res.ok) throw new Error('Failed to fetch promotions');
   const text = await res.text();
@@ -141,7 +148,13 @@ export async function fetchPromotionItems(): Promise<SheetPromotionItem[]> {
       image: r['圖片網址'] || '',
     }))
     .filter(r => r.name)
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .sort((a, b) => {
+      // 已開始／進行中的活動放前面（最新在上）；還沒開始的整組往後放、開始日愈近愈前
+      const aFuture = a.date > today;
+      const bFuture = b.date > today;
+      if (aFuture !== bFuture) return aFuture ? 1 : -1;
+      return aFuture ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date);
+    });
 }
 
 export async function fetchMediaItems(): Promise<SheetMediaItem[]> {
