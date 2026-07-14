@@ -81,6 +81,33 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
+      {/* 永續理念宣言（原文「讓每一杯鮮乳坊」為品牌文案，協會版改為「讓每一杯台灣鮮乳」） */}
+      <section className="bg-gradient-to-br from-primary-dark via-primary to-primary-light text-white py-20 md:py-28">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-blue-200 text-lg md:text-xl leading-loose mb-10">
+            全世界都在說「永續」，<br />
+            然而，我們居住的這片土地，也很重要。
+          </p>
+          <p className="text-blue-100 text-lg md:text-xl leading-loose mb-10">
+            養分、牛隻、風土、人文……<br />
+            這片土地上的一切，<br />
+            讓每一杯台灣鮮乳，<br />
+            都擁有獨一無二的在地風味。
+          </p>
+          <p className="text-blue-100 text-lg md:text-xl leading-loose mb-12">
+            酪農繼續養牛，<br />
+            牧場繼續經營，<br />
+            大家繼續喝到在地的好鮮乳，<br />
+            讓這片土地的良善循環，<br />
+            一直延續下去。
+          </p>
+          <div className="w-20 h-1 bg-accent mx-auto mb-10"></div>
+          <p className="text-2xl md:text-4xl font-black leading-snug">
+            支持在地，就是最大的永續。
+          </p>
+        </div>
+      </section>
+
       {/* Charter Icons Section */}
       <section className="py-16 md:py-24 bg-gray-warm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

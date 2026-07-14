@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
           {/* About */}
           <div>
             <h3 className="text-white font-bold text-lg mb-3">台灣農酪產業永續發展協會</h3>
-            <p className="text-blue-200 text-sm italic mb-2">Better milk, better together</p>
+            <p className="text-blue-200 text-sm mb-2">支持在地，就是最大的永續。</p>
             <p className="text-sm text-blue-200 leading-relaxed">
               致力推動產業智慧化與ESG轉型，引領台灣農酪產業走向共榮發展。
             </p>
