@@ -1,6 +1,7 @@
 const SHEET_ID = '1f3aLrPoWjBhXETAtBJrtuaOCpqyjMDDcDYmWKwgeWTE';
 const NEWS_GID = '1743163530';
 const MEDIA_GID = '1656517806';
+const PROMOTION_GID = '556003119';
 
 // 特色鮮乳品牌資料來自「網站發布用」試算表（只含公開欄位；原表單回覆表含洽談人個資、已改為私人）
 // 有新品牌入會時，需從原回覆表同步公開欄位到這張發布表
@@ -108,6 +109,38 @@ export async function fetchNewsItems(): Promise<SheetNewsItem[]> {
       link: r['連結'] || '',
       linkText: r['連結文字'] || '了解更多',
     }))
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+export interface SheetPromotionItem {
+  date: string;      // YYYY-MM-DD 活動開始日（排序用）
+  period: string;    // 活動期間顯示文字，空白時前端顯示 date
+  name: string;
+  organizer: string;
+  region: string;
+  summary: string;
+  link: string;
+  image: string;
+}
+
+export async function fetchPromotionItems(): Promise<SheetPromotionItem[]> {
+  const res = await fetch(buildCsvUrl(PROMOTION_GID));
+  if (!res.ok) throw new Error('Failed to fetch promotions');
+  const text = await res.text();
+  const rows = csvToObjects(text);
+  return rows
+    .filter(r => r['顯示'] === 'Y')
+    .map(r => ({
+      date: r['日期'] || '',
+      period: r['活動期間'] || '',
+      name: r['活動名稱'] || '',
+      organizer: r['主辦單位'] || '',
+      region: r['縣市'] || '',
+      summary: r['摘要'] || '',
+      link: r['連結'] || '',
+      image: r['圖片網址'] || '',
+    }))
+    .filter(r => r.name)
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 

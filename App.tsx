@@ -5,13 +5,14 @@ import { HomePage } from './pages/HomePage';
 import { CharterPage } from './pages/CharterPage';
 import { TeamPage } from './pages/TeamPage';
 import { NewsPage } from './pages/NewsPage';
+import { PromotionPage } from './pages/PromotionPage';
 import { TrainingPage } from './pages/TrainingPage';
 import { MediaPage } from './pages/MediaPage';
 import { DairyPage } from './pages/DairyPage';
 import { TastingPage } from './pages/TastingPage';
 import { ExchangePage } from './pages/ExchangePage';
 
-type Page = 'home' | 'charter' | 'team' | 'news' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange';
+type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange';
 
 const ROUTE_MAP: Record<string, Page> = {
   '': 'home',
@@ -19,6 +20,7 @@ const ROUTE_MAP: Record<string, Page> = {
   'charter': 'charter',
   'team': 'team',
   'news': 'news',
+  'promotion': 'promotion',
   'training': 'training',
   'media': 'media',
   'dairy': 'dairy',
@@ -56,6 +58,7 @@ const App: React.FC = () => {
       // 團隊頁暫時隱藏（理監事名單多為待補），內容齊全後改回 <TeamPage />
       case 'team': return <HomePage onNavigate={navigate} />;
       case 'news': return <NewsPage />;
+      case 'promotion': return <PromotionPage />;
       case 'training': return <TrainingPage />;
       case 'media': return <MediaPage />;
       case 'dairy': return <DairyPage />;
