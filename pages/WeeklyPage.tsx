@@ -144,22 +144,6 @@ export const WeeklyPage: React.FC = () => {
             </div>
           )}
 
-          {/* 訂閱 CTA */}
-          <div className="mt-16 p-8 bg-cream rounded-xl border border-yellow-200 text-center">
-            <h2 className="text-xl font-bold text-gray-900 mb-3">每週一，乳業情報直送信箱</h2>
-            <p className="text-gray-600 leading-relaxed mb-6">
-              想在每週一早上收到最新一期乳業週報？歡迎來信訂閱，我們會將您加入寄送名單。
-            </p>
-            <a
-              href="mailto:aga@bettermilk.com.tw?subject=訂閱乳業週報"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-light transition"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              來信訂閱乳業週報
-            </a>
-          </div>
         </div>
       </section>
     </div>
