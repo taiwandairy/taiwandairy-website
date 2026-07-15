@@ -143,6 +143,7 @@ export async function fetchWeeklyItems(): Promise<SheetWeeklyItem[]> {
 
 export interface SheetPromotionItem {
   date: string;      // YYYY-MM-DD 活動開始日（排序用）
+  endDate: string;   // YYYY-MM-DD 活動結束日（選填；空白＝單日，行事曆跨月歸屬用）
   period: string;    // 活動期間顯示文字，空白時前端顯示 date
   name: string;
   organizer: string;
@@ -168,6 +169,7 @@ export async function fetchPromotionItems(): Promise<SheetPromotionItem[]> {
     .filter(r => r['顯示'] === 'Y')
     .map(r => ({
       date: r['日期'] || '',
+      endDate: r['結束日期'] || '',
       period: r['活動期間'] || '',
       name: r['活動名稱'] || '',
       organizer: r['主辦單位'] || '',
