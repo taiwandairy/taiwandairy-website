@@ -77,7 +77,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <NavLink active={isActive('dairy')} onClick={() => handleNav('dairy')}>特色鮮乳</NavLink>
             <NavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</NavLink>
 
-            {/* Latest Info Dropdown（會務新知／推廣活動／影音媒體） */}
+            {/* Latest Info Dropdown（會務新知／台灣鮮乳推廣活動／影音媒體／乳業週報） */}
             <div
               className="relative"
               onMouseEnter={() => setLatestOpen(true)}
@@ -96,7 +96,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
               {latestOpen && (
                 <div className="absolute top-full left-0 mt-0 w-40 bg-white rounded-lg shadow-xl py-2 z-50">
                   <DropdownLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</DropdownLink>
-                  <DropdownLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>推廣活動</DropdownLink>
+                  <DropdownLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>台灣鮮乳推廣活動</DropdownLink>
                   <DropdownLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</DropdownLink>
                   <DropdownLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</DropdownLink>
                 </div>
@@ -137,7 +137,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <MobileNavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</MobileNavLink>
             <div className="text-xs text-blue-300 px-3 pt-3 pb-1 font-medium uppercase tracking-wide">最新資訊</div>
             <MobileNavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</MobileNavLink>
-            <MobileNavLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>推廣活動</MobileNavLink>
+            <MobileNavLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>台灣鮮乳推廣活動</MobileNavLink>
             <MobileNavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</MobileNavLink>
             <MobileNavLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</MobileNavLink>
             <div className="border-t border-blue-800 my-2"></div>

@@ -22,7 +22,7 @@ export const Footer: React.FC = () => {
               <li><a href="#dairy" className="hover:text-white transition">特色鮮乳</a></li>
               <li><a href="#tasting" className="hover:text-white transition">風味品鑑</a></li>
               <li><a href="#news" className="hover:text-white transition">會務新知</a></li>
-              <li><a href="#promotion" className="hover:text-white transition">推廣活動</a></li>
+              <li><a href="#promotion" className="hover:text-white transition">台灣鮮乳推廣活動</a></li>
               <li><a href="#weekly" className="hover:text-white transition">乳業週報</a></li>
               <li><a href="#training" className="hover:text-white transition">人才培育</a></li>
               <li><a href="#exchange" className="hover:text-white transition">產業交流</a></li>
