@@ -11,33 +11,73 @@ const shiftMonth = (key: string, delta: number) => {
   return monthKey(new Date(y, m - 1 + delta, 1));
 };
 
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+// 活動有效區間：「結束日期」空白、格式錯或早於開始日 → 視同單日活動
+const itemRange = (item: SheetPromotionItem): [string, string] => {
+  const start = item.date;
+  const end = DATE_RE.test(item.endDate) && item.endDate >= start ? item.endDate : start;
+  return [start, end];
+};
+
+// 活動區間是否觸及某月（跨月活動出現在每個有交集的月份）
+const touchesMonth = (item: SheetPromotionItem, month: string) => {
+  const [start, end] = itemRange(item);
+  return start.slice(0, 7) <= month && month <= end.slice(0, 7);
+};
+
+const daysInMonth = (month: string) => {
+  const [y, m] = month.split('-').map(Number);
+  return new Date(y, m, 0).getDate();
+};
+
+const spanDays = (start: string, end: string) =>
+  Math.round((Date.parse(end) - Date.parse(start)) / 86400000) + 1;
+
+// 該月要打點的日期：活動區間與該月交集的每一天；超過 31 天的長期活動只點開始日（避免整月塗滿）
+const activityDaysOf = (items: SheetPromotionItem[], month: string): Set<number> => {
+  const days = new Set<number>();
+  const monthStart = `${month}-01`;
+  const monthEnd = `${month}-${String(daysInMonth(month)).padStart(2, '0')}`;
+  for (const item of items) {
+    if (!touchesMonth(item, month)) continue;
+    const [start, end] = itemRange(item);
+    if (spanDays(start, end) > 31) {
+      if (start.slice(0, 7) === month) days.add(Number(start.slice(8, 10)));
+      continue;
+    }
+    const from = start > monthStart ? start : monthStart;
+    const to = end < monthEnd ? end : monthEnd;
+    for (let d = Number(from.slice(8, 10)); d <= Number(to.slice(8, 10)); d++) days.add(d);
+  }
+  return days;
+};
+
 export const PromotionPage: React.FC = () => {
   const { data: items, loading, error } = useSheetData('promotion', fetchPromotionItems);
   const [zoom, setZoom] = useState<{ src: string; name: string } | null>(null);
   const [viewMonth, setViewMonth] = useState(() => monthKey(new Date()));
 
-  // 依「日期」欄（活動開始日）分桶到月份；跨月活動只出現在開始月（活動期間為自由文字，不解析）
-  const byMonth = useMemo(() => {
-    const map = new Map<string, SheetPromotionItem[]>();
-    for (const item of items) {
-      const key = item.date.slice(0, 7);
-      if (!/^\d{4}-\d{2}$/.test(key)) continue;
-      const bucket = map.get(key) ?? [];
-      bucket.push(item);
-      map.set(key, bucket);
-    }
-    // 單月檢視內依日期升冪（照時間順序），與全域排序（已開始最新在上）不同
-    for (const bucket of map.values()) {
-      bucket.sort((a, b) => a.date.localeCompare(b.date));
-    }
-    return map;
-  }, [items]);
+  // 雙月檢視：同時顯示 [起始月, 下一月]，箭頭一次移動一個月
+  const months = [viewMonth, shiftMonth(viewMonth, 1)];
 
-  const monthItems = byMonth.get(viewMonth) ?? [];
-  const activityDays = useMemo(
-    () => new Set(monthItems.map(item => Number(item.date.slice(8, 10)))),
-    [monthItems]
-  );
+  const view = useMemo(() => {
+    const valid = items.filter(item => DATE_RE.test(item.date));
+    const list = valid
+      .filter(item => months.some(month => touchesMonth(item, month)))
+      .sort((a, b) => a.date.localeCompare(b.date));
+    return {
+      list,
+      counts: months.map(month => valid.filter(item => touchesMonth(item, month)).length),
+      dots: months.map(month => activityDaysOf(valid, month)),
+    };
+    // months 由 viewMonth 唯一決定
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, viewMonth]);
+
+  const [y1, m1] = months[0].split('-').map(Number);
+  const [y2, m2] = months[1].split('-').map(Number);
+  const rangeLabel = y1 === y2 ? `${y1} 年 ${m1} 月 – ${m2} 月` : `${y1} 年 ${m1} 月 – ${y2} 年 ${m2} 月`;
 
   return (
     <div>
@@ -53,12 +93,39 @@ export const PromotionPage: React.FC = () => {
       <section className="py-12 md:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {!error && (
-            <MonthCalendar
-              month={viewMonth}
-              activityDays={activityDays}
-              count={monthItems.length}
-              onShift={delta => setViewMonth(prev => shiftMonth(prev, delta))}
-            />
+            <div className="max-w-3xl mx-auto mb-10 md:mb-14">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <button
+                  type="button"
+                  onClick={() => setViewMonth(prev => shiftMonth(prev, -1))}
+                  aria-label="上個月"
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-primary transition"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <h2 className="text-lg font-bold text-gray-900">{rangeLabel}</h2>
+                <button
+                  type="button"
+                  onClick={() => setViewMonth(prev => shiftMonth(prev, 1))}
+                  aria-label="下個月"
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-primary transition"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6">
+                {months.map((month, i) => (
+                  <MonthCalendar key={month} month={month} activityDays={view.dots[i]} />
+                ))}
+              </div>
+              <p className="text-center text-sm text-gray-500 mt-3">
+                {m1} 月 {view.counts[0]} 場・{m2} 月 {view.counts[1]} 場
+              </p>
+            </div>
           )}
 
           {loading && (
@@ -76,17 +143,17 @@ export const PromotionPage: React.FC = () => {
             </div>
           )}
 
-          {!loading && monthItems.length > 0 && (
+          {!loading && view.list.length > 0 && (
             <div className="grid md:grid-cols-2 gap-6">
-              {monthItems.map((item, i) => (
+              {view.list.map((item, i) => (
                 <PromotionCard key={i} item={item} onZoom={(src, name) => setZoom({ src, name })} />
               ))}
             </div>
           )}
 
-          {!loading && !error && items.length > 0 && monthItems.length === 0 && (
+          {!loading && !error && items.length > 0 && view.list.length === 0 && (
             <div className="p-8 bg-cream rounded-xl border border-yellow-200 text-center">
-              <p className="text-gray-600">本月尚無活動，可用月曆箭頭查看其他月份。</p>
+              <p className="text-gray-600">這兩個月尚無活動，可用月曆箭頭查看其他月份。</p>
             </div>
           )}
 
@@ -128,72 +195,45 @@ const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
 const MonthCalendar: React.FC<{
   month: string;
   activityDays: Set<number>;
-  count: number;
-  onShift: (delta: number) => void;
-}> = ({ month, activityDays, count, onShift }) => {
+}> = ({ month, activityDays }) => {
   const [y, m] = month.split('-').map(Number);
   const firstWeekday = new Date(y, m - 1, 1).getDay();
-  const daysInMonth = new Date(y, m, 0).getDate();
+  const totalDays = daysInMonth(month);
   const now = new Date();
   const today = now.getFullYear() === y && now.getMonth() + 1 === m ? now.getDate() : 0;
   const cells: (number | null)[] = [
     ...Array(firstWeekday).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+    ...Array.from({ length: totalDays }, (_, i) => i + 1),
   ];
 
   return (
-    <div className="max-w-md mx-auto mb-10 md:mb-14">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            type="button"
-            onClick={() => onShift(-1)}
-            aria-label="上個月"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-primary transition"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <h2 className="text-lg font-bold text-gray-900">{y} 年 {m} 月</h2>
-          <button
-            type="button"
-            onClick={() => onShift(1)}
-            aria-label="下個月"
-            className="w-9 h-9 rounded-full flex items-center justify-center text-gray-500 hover:bg-blue-50 hover:text-primary transition"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-        <div className="grid grid-cols-7 text-center text-xs text-gray-400 mb-1">
-          {WEEKDAYS.map(w => (
-            <div key={w} className="py-1">{w}</div>
-          ))}
-        </div>
-        <div className="grid grid-cols-7 text-center">
-          {cells.map((d, i) =>
-            d === null ? (
-              <div key={i} />
-            ) : (
-              <div key={i} className="relative py-1">
-                <span
-                  className={`inline-flex w-8 h-8 items-center justify-center rounded-full text-sm ${
-                    activityDays.has(d) ? 'font-bold text-primary' : 'text-gray-600'
-                  } ${d === today ? 'ring-2 ring-accent' : ''}`}
-                >
-                  {d}
-                </span>
-                {activityDays.has(d) && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-accent"></span>
-                )}
-              </div>
-            )
-          )}
-        </div>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+      <h3 className="text-center text-base font-bold text-gray-900 mb-3">{y} 年 {m} 月</h3>
+      <div className="grid grid-cols-7 text-center text-xs text-gray-400 mb-1">
+        {WEEKDAYS.map(w => (
+          <div key={w} className="py-1">{w}</div>
+        ))}
       </div>
-      <p className="text-center text-sm text-gray-500 mt-3">本月 {count} 場活動</p>
+      <div className="grid grid-cols-7 text-center">
+        {cells.map((d, i) =>
+          d === null ? (
+            <div key={i} />
+          ) : (
+            <div key={i} className="relative py-1">
+              <span
+                className={`inline-flex w-8 h-8 items-center justify-center rounded-full text-sm ${
+                  activityDays.has(d) ? 'font-bold text-primary' : 'text-gray-600'
+                } ${d === today ? 'ring-2 ring-accent' : ''}`}
+              >
+                {d}
+              </span>
+              {activityDays.has(d) && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-accent"></span>
+              )}
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
 };
