@@ -11,8 +11,9 @@ import { MediaPage } from './pages/MediaPage';
 import { DairyPage } from './pages/DairyPage';
 import { TastingPage } from './pages/TastingPage';
 import { ExchangePage } from './pages/ExchangePage';
+import { WeeklyPage } from './pages/WeeklyPage';
 
-type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange';
+type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange' | 'weekly';
 
 const ROUTE_MAP: Record<string, Page> = {
   '': 'home',
@@ -26,6 +27,7 @@ const ROUTE_MAP: Record<string, Page> = {
   'dairy': 'dairy',
   'tasting': 'tasting',
   'exchange': 'exchange',
+  'weekly': 'weekly',
 };
 
 function getPageFromHash(): Page {
@@ -64,6 +66,7 @@ const App: React.FC = () => {
       case 'dairy': return <DairyPage />;
       case 'tasting': return <TastingPage />;
       case 'exchange': return <ExchangePage />;
+      case 'weekly': return <WeeklyPage />;
       default: return <HomePage onNavigate={navigate} />;
     }
   };
