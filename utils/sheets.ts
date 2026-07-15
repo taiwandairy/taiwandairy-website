@@ -2,6 +2,7 @@ const SHEET_ID = '1f3aLrPoWjBhXETAtBJrtuaOCpqyjMDDcDYmWKwgeWTE';
 const NEWS_GID = '1743163530';
 const MEDIA_GID = '1656517806';
 const PROMOTION_GID = '556003119';
+const WEEKLY_GID = '1429654278';
 
 // 特色鮮乳品牌資料來自「網站發布用」試算表（只含公開欄位；原表單回覆表含洽談人個資、已改為私人）
 // 有新品牌入會時，需從原回覆表同步公開欄位到這張發布表
@@ -110,6 +111,34 @@ export async function fetchNewsItems(): Promise<SheetNewsItem[]> {
       linkText: r['連結文字'] || '了解更多',
     }))
     .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+export interface SheetWeeklyItem {
+  weekDate: string;   // YYYY-MM-DD 週報日期（分組＋排序用）
+  section: string;    // 節：國際 / 台灣
+  title: string;
+  summary: string;
+  source: string;
+  link: string;
+}
+
+export async function fetchWeeklyItems(): Promise<SheetWeeklyItem[]> {
+  const res = await fetch(buildCsvUrl(WEEKLY_GID));
+  if (!res.ok) throw new Error('Failed to fetch weekly');
+  const text = await res.text();
+  const rows = csvToObjects(text);
+  return rows
+    .filter(r => r['顯示'] === 'Y')
+    .map(r => ({
+      weekDate: r['週報日期'] || '',
+      section: r['節'] || '',
+      title: r['標題'] || '',
+      summary: r['摘要'] || '',
+      source: r['來源'] || '',
+      link: r['連結'] || '',
+    }))
+    .filter(r => r.title)
+    .sort((a, b) => b.weekDate.localeCompare(a.weekDate));
 }
 
 export interface SheetPromotionItem {

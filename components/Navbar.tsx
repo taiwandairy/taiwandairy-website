@@ -13,7 +13,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
 
   const isActive = (page: Page) => currentPage === page;
   const isAboutActive = currentPage === 'charter' || currentPage === 'team';
-  const isLatestActive = currentPage === 'news' || currentPage === 'promotion' || currentPage === 'media';
+  const isLatestActive = currentPage === 'news' || currentPage === 'promotion' || currentPage === 'media' || currentPage === 'weekly';
 
   const handleNav = (page: Page) => {
     onNavigate(page);
@@ -98,6 +98,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
                   <DropdownLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</DropdownLink>
                   <DropdownLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>推廣活動</DropdownLink>
                   <DropdownLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</DropdownLink>
+                  <DropdownLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</DropdownLink>
                 </div>
               )}
             </div>
@@ -138,6 +139,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <MobileNavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</MobileNavLink>
             <MobileNavLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>推廣活動</MobileNavLink>
             <MobileNavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</MobileNavLink>
+            <MobileNavLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</MobileNavLink>
             <div className="border-t border-blue-800 my-2"></div>
             <MobileNavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</MobileNavLink>
             <MobileNavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</MobileNavLink>
