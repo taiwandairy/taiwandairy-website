@@ -12,6 +12,7 @@ import { DairyPage } from './pages/DairyPage';
 import { TastingPage } from './pages/TastingPage';
 import { ExchangePage } from './pages/ExchangePage';
 import { WeeklyPage } from './pages/WeeklyPage';
+import { trackPageView } from './utils/analytics';
 
 type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange' | 'weekly';
 
@@ -37,6 +38,11 @@ function getPageFromHash(): Page {
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>(getPageFromHash);
+
+  // 初次載入與每次換頁都回報 GA page_view（含 hashchange 與點導覽列兩條路徑）
+  useEffect(() => {
+    trackPageView(currentPage);
+  }, [currentPage]);
 
   useEffect(() => {
     const onHashChange = () => {
