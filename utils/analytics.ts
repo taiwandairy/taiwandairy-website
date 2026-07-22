@@ -22,6 +22,7 @@ const PAGE_TITLES: Record<string, string> = {
   tasting: '風味品鑑',
   exchange: '產業交流',
   weekly: '乳業週報',
+  join: '加入我們',
 };
 
 export function initAnalytics(): void {

@@ -1,4 +1,4 @@
-export type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange' | 'weekly';
+export type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange' | 'weekly' | 'join';
 
 export interface NavItem {
   label: string;

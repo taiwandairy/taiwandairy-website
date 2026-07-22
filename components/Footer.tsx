@@ -27,6 +27,7 @@ export const Footer: React.FC = () => {
               <li><a href="#training" className="hover:text-white transition">人才培育</a></li>
               <li><a href="#exchange" className="hover:text-white transition">產業交流</a></li>
               <li><a href="#media" className="hover:text-white transition">影音媒體</a></li>
+              <li><a href="#join" className="hover:text-white transition">加入我們</a></li>
             </ul>
           </div>
 
