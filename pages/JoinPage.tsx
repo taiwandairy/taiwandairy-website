@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Google 表單建置完成後（Phase B）填入表單網址，CTA 會自動從「即將開放」切換成可點擊申請。
-const APPLY_FORM_URL = '';
+const APPLY_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScLWP1EaMwhY70chZLrn1WvQujnSxOf_xrwwsM5xFpRsaO5LQ/viewform';
 // 表單開放前的入會洽詢窗口（此信箱已公開於風味品鑑頁）
 const CONTACT_EMAIL = 'tinghsuan@bettermilk.com.tw';
 
