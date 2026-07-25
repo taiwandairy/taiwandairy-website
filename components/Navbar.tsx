@@ -105,6 +105,16 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
 
             <NavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</NavLink>
             <NavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</NavLink>
+
+            {/* 加入我們：招募 CTA，用 accent 金色與其他項目區隔 */}
+            <button
+              onClick={() => handleNav('join')}
+              className={`ml-2 px-4 py-2 rounded-md text-sm font-semibold transition ${
+                isActive('join') ? 'bg-accent text-white' : 'bg-accent/90 text-white hover:bg-accent'
+              }`}
+            >
+              加入我們
+            </button>
           </nav>
 
           {/* Mobile Toggle */}
@@ -143,6 +153,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <div className="border-t border-blue-800 my-2"></div>
             <MobileNavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</MobileNavLink>
             <MobileNavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</MobileNavLink>
+            <div className="border-t border-blue-800 my-2"></div>
+            <button
+              onClick={() => handleNav('join')}
+              className="block w-full text-center px-3 py-2 rounded-md text-sm font-semibold bg-accent text-white hover:opacity-90 transition"
+            >
+              加入我們
+            </button>
           </div>
         </div>
       )}
