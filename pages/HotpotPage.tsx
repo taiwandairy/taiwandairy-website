@@ -80,8 +80,11 @@ export const HotpotPage: React.FC = () => {
     [stores, activeRegion, activeDairy],
   );
 
+  // 有照片的品牌排前面——目前多數品牌素材未到，先讓有內容的卡片被看見
   const visibleBrands = useMemo(
-    () => brands.filter(b => !activeDairy || b.dairy === activeDairy),
+    () => brands
+      .filter(b => !activeDairy || b.dairy === activeDairy)
+      .sort((a, b) => (b.photos.length > 0 ? 1 : 0) - (a.photos.length > 0 ? 1 : 0)),
     [brands, activeDairy],
   );
 
@@ -338,6 +341,14 @@ const FilterChip: React.FC<{ active: boolean; onClick: () => void; label: string
 
 const StoreCard: React.FC<{ store: SheetHotpotStore }> = ({ store: s }) => (
   <div className="bg-white rounded-2xl p-5 shadow-sm">
+    {s.photo && (
+      <img
+        src={s.photo}
+        alt={`${s.store} 照片`}
+        loading="lazy"
+        className="w-full aspect-[16/9] object-cover rounded-xl mb-4"
+      />
+    )}
     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
       <h3 className="text-lg font-bold" style={{ color: C.blue }}>{s.store}</h3>
       <span className="text-sm" style={{ color: C.blueDark }}>{s.brand}</span>
@@ -377,60 +388,84 @@ const Row: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   </div>
 );
 
-const BrandCard: React.FC<{ brand: SheetHotpotBrand }> = ({ brand: b }) => (
-  <div className="bg-white rounded-2xl p-6 shadow-sm flex flex-col">
-    <div className="flex items-start justify-between gap-3 mb-3">
-      <h3 className="text-xl font-bold leading-snug" style={{ color: C.blue }}>{b.brand}</h3>
-      {b.booth && (
-        <span
-          className="shrink-0 text-xs px-2.5 py-1 rounded-full font-bold text-white"
-          style={{ backgroundColor: C.brick }}
+const BrandCard: React.FC<{ brand: SheetHotpotBrand }> = ({ brand: b }) => {
+  // 多張照片時，點縮圖換主圖；只有一張就不顯示縮圖列
+  const [shown, setShown] = useState(0);
+  const photo = b.photos[shown];
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm flex flex-col overflow-hidden">
+      {photo && (
+        <div>
+          <img
+            src={photo}
+            alt={`${b.brand} 鍋物／店內照片`}
+            loading="lazy"
+            className="w-full aspect-[4/3] object-cover"
+          />
+          {b.photos.length > 1 && (
+            <div className="flex gap-1.5 p-2" style={{ backgroundColor: C.creamDeep }}>
+              {b.photos.map((p, i) => (
+                <button
+                  key={p}
+                  onClick={() => setShown(i)}
+                  aria-label={`${b.brand} 照片 ${i + 1}`}
+                  className="flex-1 rounded overflow-hidden transition"
+                  style={{ outline: i === shown ? `2px solid ${C.brick}` : 'none', opacity: i === shown ? 1 : 0.65 }}
+                >
+                  <img src={p} alt="" loading="lazy" className="w-full h-10 object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="p-6 flex flex-col flex-1">
+        <h3 className="text-xl font-bold leading-snug mb-3" style={{ color: C.blue }}>{b.brand}</h3>
+
+        {b.dairy && (
+          <p className="text-sm font-semibold mb-3" style={{ color: C.brick }}>
+            搭配 {b.dairy}
+          </p>
+        )}
+
+        {b.intro && (
+          <p className="text-sm leading-relaxed mb-3" style={{ color: C.blueDark }}>{b.intro}</p>
+        )}
+        {b.dairyIntro && (
+          <p
+            className="text-sm leading-relaxed mb-3 pl-3 border-l-2"
+            style={{ color: C.blueDark, borderColor: C.sage }}
+          >
+            {b.dairyIntro}
+          </p>
+        )}
+        {!b.intro && !b.dairyIntro && (
+          <p className="text-sm mb-3 opacity-60" style={{ color: C.blueDark }}>品牌介紹更新中</p>
+        )}
+
+        <div
+          className="mt-auto pt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs border-t"
+          style={{ color: C.blueDark, borderColor: C.creamDeep }}
         >
-          記者會設攤
-        </span>
-      )}
+          {b.storeCount > 0 && <span>{b.storeCount} 家門市</span>}
+          {b.period && <span>{b.period}</span>}
+          {b.website && (
+            <a href={b.website} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: C.brick }}>
+              官網
+            </a>
+          )}
+          {b.instagram && (
+            <a href={b.instagram} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: C.brick }}>
+              Instagram
+            </a>
+          )}
+        </div>
+      </div>
     </div>
-
-    {b.dairy && (
-      <p className="text-sm font-semibold mb-3" style={{ color: C.brick }}>
-        搭配 {b.dairy}
-      </p>
-    )}
-
-    {b.intro && (
-      <p className="text-sm leading-relaxed mb-3" style={{ color: C.blueDark }}>{b.intro}</p>
-    )}
-    {b.dairyIntro && (
-      <p
-        className="text-sm leading-relaxed mb-3 pl-3 border-l-2"
-        style={{ color: C.blueDark, borderColor: C.sage }}
-      >
-        {b.dairyIntro}
-      </p>
-    )}
-    {!b.intro && !b.dairyIntro && (
-      <p className="text-sm mb-3 opacity-60" style={{ color: C.blueDark }}>品牌介紹更新中</p>
-    )}
-
-    <div
-      className="mt-auto pt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs border-t"
-      style={{ color: C.blueDark, borderColor: C.creamDeep }}
-    >
-      {b.storeCount > 0 && <span>{b.storeCount} 家門市</span>}
-      {b.period && <span>{b.period}</span>}
-      {b.website && (
-        <a href={b.website} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: C.brick }}>
-          官網
-        </a>
-      )}
-      {b.instagram && (
-        <a href={b.instagram} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: C.brick }}>
-          Instagram
-        </a>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 const PressItem: React.FC<{ label: string; value: string; sub?: string }> = ({ label, value, sub }) => (
   <div className="bg-white/10 rounded-xl p-5">

@@ -17,6 +17,13 @@ export function safeHttpUrl(url: string): string {
   return '';
 }
 
+// 圖片來源：允許自託管的站內路徑（/images/...）或完整 https 網址，其餘一律丟掉
+export function safeImageSrc(url: string): string {
+  const trimmed = url.trim();
+  if (trimmed.startsWith('/images/')) return trimmed;
+  return safeHttpUrl(trimmed);
+}
+
 function buildCsvUrl(gid: string, sheetId: string = SHEET_ID): string {
   // headers=1 強制 gviz 只把第 1 行當表頭；不加的話 gviz 會根據儲存格換行 heuristic 猜表頭行數，
   // 一旦摘要欄有多行內容，整張表會被壓成單列導致前端解析後 0 筆。
@@ -301,8 +308,8 @@ export interface SheetHotpotBrand {
   intro: string;        // 火鍋品牌介紹
   dairyIntro: string;   // 鮮乳品牌介紹
   storeCount: number;   // 門市數
-  booth: string;        // 記者會攤位（左1／右3…），空白＝未擺攤
   period: string;       // 推廣檔期
+  photos: string[];     // 產品／店內照片（CMS 以逗號分隔多張）
   website: string;
   instagram: string;
   logo: string;
@@ -321,8 +328,11 @@ export async function fetchHotpotBrands(): Promise<SheetHotpotBrand[]> {
       intro: r['品牌介紹'] || '',
       dairyIntro: r['鮮乳介紹'] || '',
       storeCount: Number(r['門市數']) || 0,
-      booth: (r['記者會攤位'] || '').trim(),
       period: r['推廣檔期'] || '',
+      photos: (r['照片'] || '')
+        .split(',')
+        .map(s => safeImageSrc(s))
+        .filter(Boolean),
       website: safeHttpUrl(r['官網'] || ''),
       instagram: safeHttpUrl(r['IG'] || ''),
       logo: safeHttpUrl(r['logo網址'] || ''),
@@ -363,7 +373,7 @@ export async function fetchHotpotStores(): Promise<SheetHotpotStore[]> {
       dish: r['鍋物名稱'] || '',
       price: r['售價'] || '',
       mapUrl: safeHttpUrl(r['地圖連結'] || ''),
-      photo: safeHttpUrl(r['照片網址'] || ''),
+      photo: safeImageSrc(r['照片網址'] || ''),
     }))
     .filter(s => s.brand);
 }
