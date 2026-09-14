@@ -40,8 +40,23 @@ function getPageFromHash(): Page {
   return ROUTE_MAP[hash] || 'home';
 }
 
+// 初次載入時額外支援純路徑網址（例如海報 QR code 的 /hotpot）。
+// vercel.json 的 catch-all rewrite 會把任何路徑都送到 index.html，
+// 但 SPA 本身只看 hash，所以這裡補一段：沒有 hash 時改讀 pathname。
+// 對到之後用 replaceState 正規化成 /#xxx，後續換頁才不會被 pathname 黏住。
+function getInitialPage(): Page {
+  if (window.location.hash) return getPageFromHash();
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  const page = ROUTE_MAP[path];
+  if (path && page) {
+    window.history.replaceState(null, '', `/#${path}`);
+    return page;
+  }
+  return 'home';
+}
+
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>(getPageFromHash);
+  const [currentPage, setCurrentPage] = useState<Page>(getInitialPage);
 
   // 初次載入與每次換頁都回報 GA page_view（含 hashchange 與點導覽列兩條路徑）
   useEffect(() => {
