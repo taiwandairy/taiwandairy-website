@@ -7,13 +7,15 @@ import type { MapPalette } from '../components/TaiwanMap';
 
 // 火鍋季主視覺的色票（米色底／藍灰標題／磚紅點綴），與官網主色系分開，
 // 只在這一頁使用——活動有自己的視覺識別，但導覽列與頁尾維持協會原本的樣子。
+// 色值是從主視覺海報實際取樣出來的，不是目測：
+// 米色底 #FEE5CA、標題藍灰 #486279、標題紅 #C85030、漩渦淺綠 #CFDBBC
 const C = {
-  cream: '#FBF0E1',
-  creamDeep: '#F4E0C6',
-  blue: '#56728A',
-  blueDark: '#3F5668',
-  brick: '#C4553F',
-  sage: '#A8C0B8',
+  cream: '#FFF4E8',      // 比海報底色淺一階，長段落用
+  creamDeep: '#FEE5CA',  // 海報底色本色
+  blue: '#486279',       // 海報標題與底部色帶
+  blueDark: '#33485A',   // 深一階，內文用
+  brick: '#C85030',      // 海報「2026 國產鮮乳火鍋季」的紅
+  sage: '#CFDBBC',
 };
 
 const MAP_PALETTE: MapPalette = {
@@ -26,7 +28,7 @@ const MAP_PALETTE: MapPalette = {
 
 // 主視覺圖檔由設計師匯出後放進 public/images/hotpot/，放進去就會自動顯示；
 // 檔案還沒到時走純文字版 hero，不會出現破圖。
-const HERO_IMAGE = '/images/hotpot/hero.jpg';
+const HERO_IMAGE = '/images/hotpot/hero.jpg';  // 由 Drive「外包設計｜牛奶鍋季主視覺」的 A3&A4 海報轉出
 
 const PERIOD = '2026.10.01 — 12.31';
 
