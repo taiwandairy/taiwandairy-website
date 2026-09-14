@@ -17,6 +17,13 @@ export function safeHttpUrl(url: string): string {
   return '';
 }
 
+// 圖片來源：允許自託管的站內路徑（/images/...）或完整 https 網址，其餘一律丟掉
+export function safeImageSrc(url: string): string {
+  const trimmed = url.trim();
+  if (trimmed.startsWith('/images/')) return trimmed;
+  return safeHttpUrl(trimmed);
+}
+
 function buildCsvUrl(gid: string, sheetId: string = SHEET_ID): string {
   // headers=1 強制 gviz 只把第 1 行當表頭；不加的話 gviz 會根據儲存格換行 heuristic 猜表頭行數，
   // 一旦摘要欄有多行內容，整張表會被壓成單列導致前端解析後 0 筆。
@@ -287,4 +294,86 @@ export async function fetchDairyBrands(): Promise<SheetDairyBrand[]> {
       };
     })
     .filter(b => b.brand);
+}
+
+// ===== 2026 國產鮮乳火鍋季 =====
+
+const HOTPOT_BRAND_GID = '958233586';
+const HOTPOT_STORE_GID = '652937656';
+
+export interface SheetHotpotBrand {
+  order: number;
+  brand: string;        // 火鍋品牌
+  dairy: string;        // 搭配的鮮乳品牌
+  intro: string;        // 火鍋品牌介紹
+  dairyIntro: string;   // 鮮乳品牌介紹
+  storeCount: number;   // 門市數
+  period: string;       // 推廣檔期
+  photos: string[];     // 產品／店內照片（CMS 以逗號分隔多張）
+  website: string;
+  instagram: string;
+  logo: string;
+}
+
+export async function fetchHotpotBrands(): Promise<SheetHotpotBrand[]> {
+  const res = await fetch(buildCsvUrl(HOTPOT_BRAND_GID));
+  if (!res.ok) throw new Error('Failed to fetch hotpot brands');
+  const rows = csvToObjects(await res.text());
+  return rows
+    .filter(r => r['顯示'] === 'Y')
+    .map(r => ({
+      order: Number(r['排序']) || 999,
+      brand: (r['火鍋品牌'] || '').trim(),
+      dairy: (r['鮮乳品牌'] || '').trim(),
+      intro: r['品牌介紹'] || '',
+      dairyIntro: r['鮮乳介紹'] || '',
+      storeCount: Number(r['門市數']) || 0,
+      period: r['推廣檔期'] || '',
+      photos: (r['照片'] || '')
+        .split(',')
+        .map(s => safeImageSrc(s))
+        .filter(Boolean),
+      website: safeHttpUrl(r['官網'] || ''),
+      instagram: safeHttpUrl(r['IG'] || ''),
+      logo: safeHttpUrl(r['logo網址'] || ''),
+    }))
+    .filter(b => b.brand)
+    .sort((a, b) => a.order - b.order);
+}
+
+export interface SheetHotpotStore {
+  brand: string;
+  store: string;
+  region: string;   // 縣市（地圖分區用）
+  address: string;
+  phone: string;
+  hours: string;
+  dairy: string;
+  dish: string;
+  price: string;
+  mapUrl: string;
+  photo: string;
+}
+
+export async function fetchHotpotStores(): Promise<SheetHotpotStore[]> {
+  const res = await fetch(buildCsvUrl(HOTPOT_STORE_GID));
+  if (!res.ok) throw new Error('Failed to fetch hotpot stores');
+  const rows = csvToObjects(await res.text());
+  return rows
+    .filter(r => r['顯示'] === 'Y')
+    .map(r => ({
+      brand: (r['火鍋品牌'] || '').trim(),
+      store: (r['門市名稱'] || '').trim(),
+      // 縣市統一成地圖用的短名（「臺北市」「台北市」都收斂成「台北」）
+      region: (r['縣市'] || '').replace(/臺/g, '台').replace(/[縣市]$/, '').trim(),
+      address: r['地址'] || '',
+      phone: r['電話'] || '',
+      hours: r['營業時間'] || '',
+      dairy: (r['鮮乳品牌'] || '').trim(),
+      dish: r['鍋物名稱'] || '',
+      price: r['售價'] || '',
+      mapUrl: safeHttpUrl(r['地圖連結'] || ''),
+      photo: safeImageSrc(r['照片網址'] || ''),
+    }))
+    .filter(s => s.brand);
 }

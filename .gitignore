@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 .vercel
 .env*
+
+# QR code 產出（給海報印刷用的交付檔，不屬於網站內容）
+qr-codes/
