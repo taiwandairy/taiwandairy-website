@@ -23,6 +23,7 @@ const PAGE_TITLES: Record<string, string> = {
   exchange: '產業交流',
   weekly: '乳業週報',
   join: '加入我們',
+  hotpot: '國產鮮乳火鍋季',
 };
 
 export function initAnalytics(): void {

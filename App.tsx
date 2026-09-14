@@ -13,9 +13,10 @@ import { TastingPage } from './pages/TastingPage';
 import { ExchangePage } from './pages/ExchangePage';
 import { WeeklyPage } from './pages/WeeklyPage';
 import { JoinPage } from './pages/JoinPage';
+import { HotpotPage } from './pages/HotpotPage';
 import { trackPageView } from './utils/analytics';
 
-type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange' | 'weekly' | 'join';
+type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange' | 'weekly' | 'join' | 'hotpot';
 
 const ROUTE_MAP: Record<string, Page> = {
   '': 'home',
@@ -31,6 +32,7 @@ const ROUTE_MAP: Record<string, Page> = {
   'exchange': 'exchange',
   'weekly': 'weekly',
   'join': 'join',
+  'hotpot': 'hotpot',
 };
 
 function getPageFromHash(): Page {
@@ -76,6 +78,7 @@ const App: React.FC = () => {
       case 'exchange': return <ExchangePage />;
       case 'weekly': return <WeeklyPage />;
       case 'join': return <JoinPage />;
+      case 'hotpot': return <HotpotPage />;
       default: return <HomePage onNavigate={navigate} />;
     }
   };
