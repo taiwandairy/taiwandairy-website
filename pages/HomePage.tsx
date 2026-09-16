@@ -1,10 +1,19 @@
 import React from 'react';
 import type { Page } from '../types';
 import { useSheetData } from '../hooks/useSheetData';
-import { fetchNewsItems } from '../utils/sheets';
+import { fetchNewsItems, safeLinkUrl, isExternalLink, pickHomeNews } from '../utils/sheets';
 
 interface HomePageProps {
   onNavigate: (page: Page) => void;
+}
+
+const HOME_NEWS_MAX = 3;
+const HOME_SUMMARY_MAX = 100;
+
+// 首頁卡片的摘要要截短——招標公告那類動輒五百字，整段放上來會把首頁拉成三倍長
+function truncate(text: string, max: number): string {
+  const flat = text.replace(/\s+/g, ' ').trim();
+  return flat.length > max ? `${flat.slice(0, max)}…` : flat;
 }
 
 const CHARTER_POINTS = [
@@ -21,7 +30,7 @@ const CHARTER_POINTS = [
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const { data: news, loading: newsLoading } = useSheetData('news', fetchNewsItems);
-  const latestNews = news[0];
+  const homeNews = pickHomeNews(news, HOME_NEWS_MAX);
 
   return (
     <div>
@@ -152,30 +161,39 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </div>
             )}
 
-            {!newsLoading && latestNews && (
-              <a
-                href={latestNews.link || '#news'}
-                target={latestNews.link ? '_blank' : undefined}
-                rel={latestNews.link ? 'noopener noreferrer' : undefined}
-                className="block p-6 bg-gray-warm rounded-xl hover:shadow-md transition group"
-              >
-                <div className="flex flex-wrap items-center gap-3 mb-3">
-                  {latestNews.tag && (
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">{latestNews.tag}</span>
-                  )}
-                  <time className="text-sm text-gray-400">{latestNews.date}</time>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition">
-                  {latestNews.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed mb-3">{latestNews.summary}</p>
-                <p className="text-primary text-sm font-medium group-hover:underline">
-                  {latestNews.linkText} &rarr;
-                </p>
-              </a>
+            {!newsLoading && homeNews.length > 0 && (
+              <div className="space-y-4">
+                {homeNews.map((item, i) => {
+                  const link = safeLinkUrl(item.link);
+                  const external = isExternalLink(link);
+                  return (
+                    <a
+                      key={i}
+                      href={link || '#news'}
+                      target={external ? '_blank' : undefined}
+                      rel={external ? 'noopener noreferrer' : undefined}
+                      className="block p-6 bg-gray-warm rounded-xl hover:shadow-md transition group"
+                    >
+                      <div className="flex flex-wrap items-center gap-3 mb-3">
+                        {item.tag && (
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">{item.tag}</span>
+                        )}
+                        <time className="text-sm text-gray-400">{item.date}</time>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary transition">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed mb-3">{truncate(item.summary, HOME_SUMMARY_MAX)}</p>
+                      <p className="text-primary text-sm font-medium group-hover:underline">
+                        {link ? item.linkText : '看完整內容'} &rarr;
+                      </p>
+                    </a>
+                  );
+                })}
+              </div>
             )}
 
-            {!newsLoading && !latestNews && (
+            {!newsLoading && homeNews.length === 0 && (
               <div className="p-6 bg-gray-warm rounded-xl text-center">
                 <p className="text-gray-500">最新消息即將上線</p>
               </div>

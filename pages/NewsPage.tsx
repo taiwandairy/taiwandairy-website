@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSheetData } from '../hooks/useSheetData';
-import { fetchNewsItems, safeHttpUrl } from '../utils/sheets';
+import { fetchNewsItems, safeLinkUrl, isExternalLink } from '../utils/sheets';
 
 export const NewsPage: React.FC = () => {
   const { data: news, loading, error } = useSheetData('news', fetchNewsItems);
@@ -33,7 +33,10 @@ export const NewsPage: React.FC = () => {
 
           {!loading && news.length > 0 && (
             <div className="space-y-6">
-              {news.map((item, i) => (
+              {news.map((item, i) => {
+                const link = safeLinkUrl(item.link);
+                const external = isExternalLink(link);
+                return (
                 <article key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                   <div className="flex flex-wrap items-center gap-3 mb-3">
                     {item.tag && (
@@ -45,11 +48,11 @@ export const NewsPage: React.FC = () => {
                   </div>
                   <h2 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h2>
                   <p className="text-gray-600 leading-relaxed mb-4 whitespace-pre-line">{item.summary}</p>
-                  {safeHttpUrl(item.link) && (
+                  {link && (
                     <a
-                      href={safeHttpUrl(item.link)}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={link}
+                      target={external ? '_blank' : undefined}
+                      rel={external ? 'noopener noreferrer' : undefined}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-light transition"
                     >
                       {item.linkText}
@@ -59,7 +62,8 @@ export const NewsPage: React.FC = () => {
                     </a>
                   )}
                 </article>
-              ))}
+                );
+              })}
             </div>
           )}
 
