@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Page } from '../types';
 import { useSheetData } from '../hooks/useSheetData';
-import { fetchNewsItems } from '../utils/sheets';
+import { fetchNewsItems, safeLinkUrl, isExternalLink } from '../utils/sheets';
 
 interface HomePageProps {
   onNavigate: (page: Page) => void;
@@ -22,6 +22,9 @@ const CHARTER_POINTS = [
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const { data: news, loading: newsLoading } = useSheetData('news', fetchNewsItems);
   const latestNews = news[0];
+  // 首頁原本把 CMS 的值直接塞進 href，等於完全沒把關；統一走與會務新知同一套白名單
+  const latestLink = latestNews ? safeLinkUrl(latestNews.link) : '';
+  const latestExternal = isExternalLink(latestLink);
 
   return (
     <div>
@@ -154,9 +157,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
             {!newsLoading && latestNews && (
               <a
-                href={latestNews.link || '#news'}
-                target={latestNews.link ? '_blank' : undefined}
-                rel={latestNews.link ? 'noopener noreferrer' : undefined}
+                href={latestLink || '#news'}
+                target={latestExternal ? '_blank' : undefined}
+                rel={latestExternal ? 'noopener noreferrer' : undefined}
                 className="block p-6 bg-gray-warm rounded-xl hover:shadow-md transition group"
               >
                 <div className="flex flex-wrap items-center gap-3 mb-3">

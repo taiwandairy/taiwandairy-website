@@ -24,6 +24,34 @@ export function safeImageSrc(url: string): string {
   return safeHttpUrl(trimmed);
 }
 
+// CMS 的「連結」欄比圖片欄多兩種正當寫法：站內檔案（/news/xxx.pdf）與寄信（mailto:）。
+// safeHttpUrl 只放行 http(s)，會把這兩種一起丟掉——秘書填了卻不顯示、也看不出原因。
+// 這裡放寬到三種，但 javascript:／data: 這類仍然擋死。
+export function safeLinkUrl(url: string): string {
+  const trimmed = url.trim();
+  // 控制字元（含換行）一律視為汙染，直接丟掉
+  if (/[\u0000-\u001F\u007F]/.test(trimmed)) return '';
+  // 站內絕對路徑。`//evil.com` 是 protocol-relative 的外部網址，長得像站內路徑但不是，必須擋
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) return trimmed;
+  if (/^mailto:[^\s@]+@[^\s@]+$/i.test(trimmed)) return trimmed;
+  return safeHttpUrl(trimmed);
+}
+
+// 判斷連結該不該開新分頁：站外網址要，站內檔案與 mailto 不要
+export function isExternalLink(url: string): boolean {
+  return /^https?:\/\//i.test(url.trim());
+}
+
+// 排序用的日期正規化：把 2026/4/7、2026-4-7 都補成 2026-04-07，再拿去比字串。
+// 原本直接用 localeCompare 比顯示字串，等於把排序的正確性綁在試算表的顯示格式上——
+// 秘書把日期欄改成「2026/4/7」這種不補零的格式時，4/7 會排到 4/28 前面、10 月會掉到 9 月下面，
+// 而且畫面只是順序怪、不會報錯，沒人看得出來。對不上格式的值回空字串，排到最後。
+export function normalizeDate(value: string): string {
+  const m = value.trim().match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+  if (!m) return '';
+  return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+}
+
 function buildCsvUrl(gid: string, sheetId: string = SHEET_ID): string {
   // headers=1 強制 gviz 只把第 1 行當表頭；不加的話 gviz 會根據儲存格換行 heuristic 猜表頭行數，
   // 一旦摘要欄有多行內容，整張表會被壓成單列導致前端解析後 0 筆。
@@ -117,7 +145,7 @@ export async function fetchNewsItems(): Promise<SheetNewsItem[]> {
       link: r['連結'] || '',
       linkText: r['連結文字'] || '了解更多',
     }))
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .sort((a, b) => normalizeDate(b.date).localeCompare(normalizeDate(a.date)));
 }
 
 export interface SheetWeeklyItem {
@@ -145,7 +173,7 @@ export async function fetchWeeklyItems(): Promise<SheetWeeklyItem[]> {
       link: r['連結'] || '',
     }))
     .filter(r => r.title)
-    .sort((a, b) => b.weekDate.localeCompare(a.weekDate));
+    .sort((a, b) => normalizeDate(b.weekDate).localeCompare(normalizeDate(a.weekDate)));
 }
 
 export interface SheetPromotionItem {
@@ -188,10 +216,12 @@ export async function fetchPromotionItems(): Promise<SheetPromotionItem[]> {
     .filter(r => r.name)
     .sort((a, b) => {
       // 已開始／進行中的活動放前面（最新在上）；還沒開始的整組往後放、開始日愈近愈前
-      const aFuture = a.date > today;
-      const bFuture = b.date > today;
+      const aDate = normalizeDate(a.date);
+      const bDate = normalizeDate(b.date);
+      const aFuture = aDate > today;
+      const bFuture = bDate > today;
       if (aFuture !== bFuture) return aFuture ? 1 : -1;
-      return aFuture ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date);
+      return aFuture ? aDate.localeCompare(bDate) : bDate.localeCompare(aDate);
     });
 }
 
@@ -210,7 +240,7 @@ export async function fetchMediaItems(): Promise<SheetMediaItem[]> {
       summary: r['摘要'] || '',
       link: r['連結'] || '',
     }))
-    .sort((a, b) => b.date.localeCompare(a.date));
+    .sort((a, b) => normalizeDate(b.date).localeCompare(normalizeDate(a.date)));
 }
 
 // ===== 特色鮮乳品牌 =====

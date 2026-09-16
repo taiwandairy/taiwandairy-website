@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSheetData } from '../hooks/useSheetData';
-import { fetchMediaItems } from '../utils/sheets';
+import { fetchMediaItems, safeLinkUrl } from '../utils/sheets';
 
 const YOUTUBE_CHANNEL = 'https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E8%BE%B2%E9%85%AA%E7%94%A2%E6%A5%AD%E6%B0%B8%E7%BA%8C%E7%99%BC%E5%B1%95';
 
@@ -65,7 +65,7 @@ export const MediaPage: React.FC = () => {
               {media.map((item, i) => (
                 <article
                   key={i}
-                  onClick={() => item.link && window.open(item.link, '_blank')}
+                  onClick={() => { const url = safeLinkUrl(item.link); if (url) window.open(url, '_blank', 'noopener'); }}
                   className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group cursor-pointer"
                 >
                   {/* Thumbnail */}
