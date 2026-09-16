@@ -119,6 +119,7 @@ export interface SheetNewsItem {
   summary: string;
   link: string;
   linkText: string;
+  homeFeature: boolean;  // CMS「首頁精選」欄：除了最新一篇之外，額外指定要放上首頁的
 }
 
 export interface SheetMediaItem {
@@ -128,6 +129,12 @@ export interface SheetMediaItem {
   source: string;
   summary: string;
   link: string;
+}
+
+// 首頁要放哪幾則：最新一則永遠在（秘書什麼都不做也不會空），再加上 CMS「首頁精選」
+// 勾到的，最多 max 則。最新那則剛好也被勾選時不會重複出現（靠索引判斷，不是比內容）。
+export function pickHomeNews(news: SheetNewsItem[], max = 3): SheetNewsItem[] {
+  return news.filter((item, i) => i === 0 || item.homeFeature).slice(0, max);
 }
 
 export async function fetchNewsItems(): Promise<SheetNewsItem[]> {
@@ -144,6 +151,9 @@ export async function fetchNewsItems(): Promise<SheetNewsItem[]> {
       summary: r['摘要'] || '',
       link: r['連結'] || '',
       linkText: r['連結文字'] || '了解更多',
+      // 秘書可能填 Y，也可能把欄位改成核取方塊（gviz 會回 TRUE）；兩種都認，
+      // 欄位不存在時一律 false，首頁自動退回「只顯示最新一篇」的原行為
+      homeFeature: ['y', 'true'].includes((r['首頁精選'] || '').trim().toLowerCase()),
     }))
     .sort((a, b) => normalizeDate(b.date).localeCompare(normalizeDate(a.date)));
 }
