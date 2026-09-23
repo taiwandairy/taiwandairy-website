@@ -348,7 +348,6 @@ export interface SheetHotpotBrand {
   intro: string;        // 火鍋品牌介紹
   dairyIntro: string;   // 鮮乳品牌介紹
   storeCount: number;   // 門市數
-  period: string;       // 推廣檔期
   photos: string[];     // 產品／店內照片（CMS 以逗號分隔多張）
   website: string;
   instagram: string;
@@ -368,7 +367,6 @@ export async function fetchHotpotBrands(): Promise<SheetHotpotBrand[]> {
       intro: r['品牌介紹'] || '',
       dairyIntro: r['鮮乳介紹'] || '',
       storeCount: Number(r['門市數']) || 0,
-      period: r['推廣檔期'] || '',
       photos: (r['照片'] || '')
         .split(',')
         .map(s => safeImageSrc(s))

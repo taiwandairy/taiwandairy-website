@@ -450,7 +450,6 @@ const BrandCard: React.FC<{ brand: SheetHotpotBrand }> = ({ brand: b }) => {
           style={{ color: C.blueDark, borderColor: C.creamDeep }}
         >
           {b.storeCount > 0 && <span>{b.storeCount} 家門市</span>}
-          {b.period && <span>{b.period}</span>}
           {b.website && (
             <a href={b.website} target="_blank" rel="noopener noreferrer" className="underline" style={{ color: C.brick }}>
               官網
