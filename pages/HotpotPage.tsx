@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSheetData } from '../hooks/useSheetData';
 import { fetchHotpotBrands, fetchHotpotStores } from '../utils/sheets';
 import type { SheetHotpotBrand, SheetHotpotStore } from '../utils/sheets';
@@ -393,6 +393,23 @@ const BrandCard: React.FC<{ brand: SheetHotpotBrand }> = ({ brand: b }) => {
   const [shown, setShown] = useState(0);
   const photo = b.photos[shown];
 
+  // 介紹文字長短差很多（短的 40 字、長的 500 多字），收合時固定行數讓卡片高度一致；
+  // 只有真的被截斷才出現「看更多」——用量出來的高度判斷，不用字數，因為卡片寬度會隨螢幕變
+  const [expanded, setExpanded] = useState(false);
+  const [truncated, setTruncated] = useState(false);
+  const textRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = textRef.current;
+    if (!el || expanded) return;  // 展開後不重量，否則「收合」按鈕會跟著消失
+    const check = () =>
+      setTruncated([...el.querySelectorAll('p')].some(p => p.scrollHeight > p.clientHeight + 1));
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    document.fonts?.ready.then(check);
+    return () => ro.disconnect();
+  }, [b.intro, b.dairyIntro, expanded]);
+
   return (
     <div className="bg-white rounded-2xl shadow-sm flex flex-col overflow-hidden">
       {photo && (
@@ -430,16 +447,33 @@ const BrandCard: React.FC<{ brand: SheetHotpotBrand }> = ({ brand: b }) => {
           </p>
         )}
 
-        {b.intro && (
-          <p className="text-sm leading-relaxed mb-3" style={{ color: C.blueDark }}>{b.intro}</p>
-        )}
-        {b.dairyIntro && (
-          <p
-            className="text-sm leading-relaxed mb-3 pl-3 border-l-2"
-            style={{ color: C.blueDark, borderColor: C.sage }}
+        <div ref={textRef}>
+          {b.intro && (
+            <p
+              className={`text-sm leading-relaxed mb-3 ${expanded ? '' : 'line-clamp-4'}`}
+              style={{ color: C.blueDark }}
+            >
+              {b.intro}
+            </p>
+          )}
+          {b.dairyIntro && (
+            <p
+              className={`text-sm leading-relaxed mb-3 pl-3 border-l-2 ${expanded ? '' : 'line-clamp-3'}`}
+              style={{ color: C.blueDark, borderColor: C.sage }}
+            >
+              {b.dairyIntro}
+            </p>
+          )}
+        </div>
+        {truncated && (
+          <button
+            onClick={() => setExpanded(e => !e)}
+            aria-expanded={expanded}
+            className="self-start text-sm font-medium mb-3 hover:underline"
+            style={{ color: C.brick }}
           >
-            {b.dairyIntro}
-          </p>
+            {expanded ? '收合 ▴' : '看更多 ▾'}
+          </button>
         )}
         {!b.intro && !b.dairyIntro && (
           <p className="text-sm mb-3 opacity-60" style={{ color: C.blueDark }}>品牌介紹更新中</p>
