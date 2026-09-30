@@ -33,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             aria-label="台灣農酪產業永續發展協會"
           >
             <img
-              src="/images/logo-horizontal.jpg"
+              src="/images/logo-horizontal-white.png"
               alt="台灣農酪產業永續發展協會 Taiwan Dairy Farming Sustainable Development Association"
               className="h-10 md:h-14 w-auto"
             />
