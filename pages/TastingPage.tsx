@@ -269,7 +269,7 @@ export const TastingPage: React.FC = () => {
                 </p>
                 <p className="text-sm text-gray-700 leading-relaxed">
                   如有<b>授權使用需求（包括推廣、教育、教學、商業應用等）</b>，請事先與協會聯繫取得同意：
-                  <a href="mailto:tinghsuan@bettermilk.com.tw" className="text-secondary font-semibold hover:underline ml-1">tinghsuan@bettermilk.com.tw</a>
+                  <a href="mailto:taiwandairy.org@gmail.com" className="text-secondary font-semibold hover:underline ml-1">taiwandairy.org@gmail.com</a>
                 </p>
               </div>
             </div>

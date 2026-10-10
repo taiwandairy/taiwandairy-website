@@ -234,7 +234,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </div>
                 <div>
                   <h3 className="font-bold text-gray-900 mb-1">電子信箱</h3>
-                  <p className="text-gray-600 text-sm">tinghsuan@bettermilk.com.tw</p>
+                  <p className="text-gray-600 text-sm">taiwandairy.org@gmail.com</p>
                 </div>
               </div>
 
