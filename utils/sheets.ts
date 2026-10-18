@@ -129,6 +129,13 @@ export interface SheetMediaItem {
   source: string;
   summary: string;
   link: string;
+  image: string;         // 封面圖：CMS「圖片網址」優先，YouTube 連結沒填時自動取縮圖
+}
+
+// 從 YouTube 連結取出影片 ID（youtu.be/ID、watch?v=ID、shorts/ID、embed/ID）
+function youtubeThumbnail(link: string): string {
+  const m = link.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/))([\w-]{11})/);
+  return m ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : '';
 }
 
 // 首頁要放哪幾則：最新一則永遠在（秘書什麼都不做也不會空），再加上 CMS「首頁精選」
@@ -245,10 +252,12 @@ export async function fetchMediaItems(): Promise<SheetMediaItem[]> {
     .map(r => ({
       date: r['日期'] || '',
       title: r['標題'] || '',
-      type: r['類型'] === '影片' ? 'video' as const : 'article' as const,
+      // 秘書會填「影片」或「影音報導」，含「影」就當影片
+      type: (r['類型'] || '').includes('影') ? 'video' as const : 'article' as const,
       source: r['來源'] || '',
       summary: r['摘要'] || '',
       link: r['連結'] || '',
+      image: r['圖片網址'] || youtubeThumbnail(r['連結'] || ''),
     }))
     .sort((a, b) => normalizeDate(b.date).localeCompare(normalizeDate(a.date)));
 }

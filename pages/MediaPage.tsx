@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSheetData } from '../hooks/useSheetData';
-import { fetchMediaItems, safeLinkUrl } from '../utils/sheets';
+import { fetchMediaItems, safeLinkUrl, safeHttpUrl } from '../utils/sheets';
 
 const YOUTUBE_CHANNEL = 'https://www.youtube.com/@%E5%8F%B0%E7%81%A3%E8%BE%B2%E9%85%AA%E7%94%A2%E6%A5%AD%E6%B0%B8%E7%BA%8C%E7%99%BC%E5%B1%95';
 
@@ -89,6 +89,17 @@ export const MediaPage: React.FC = () => {
                         </div>
                       )}
                     </div>
+                    {/* 有封面圖就蓋在圖示上；載入失敗則隱藏，露出底下的圖示 */}
+                    {safeHttpUrl(item.image) && (
+                      <img
+                        src={safeHttpUrl(item.image)}
+                        alt={item.title}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    )}
                     <div className="absolute top-3 left-3">
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
                         item.type === 'video' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
