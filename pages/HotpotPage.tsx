@@ -33,7 +33,7 @@ const HERO_IMAGE = '/images/hotpot/hero.jpg';  // 由 Drive「外包設計｜牛
 const PERIOD = '2026.10.01 — 12.31';
 
 // 門市清單先顯示幾張；錢都一家就 90 間，全列會把「參與品牌」推到很下面
-const STORE_PREVIEW = 12;
+const STORE_PREVIEW = 4;
 
 const PRESS = {
   date: '2026 年 9 月 30 日（三）11:00–12:00',
