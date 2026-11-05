@@ -32,6 +32,9 @@ const HERO_IMAGE = '/images/hotpot/hero.jpg';  // 由 Drive「外包設計｜牛
 
 const PERIOD = '2026.10.01 — 12.31';
 
+// 門市清單先顯示幾張；錢都一家就 90 間，全列會把「參與品牌」推到很下面
+const STORE_PREVIEW = 12;
+
 const PRESS = {
   date: '2026 年 9 月 30 日（三）11:00–12:00',
   venue: '88 號樂章',
@@ -47,6 +50,10 @@ export const HotpotPage: React.FC = () => {
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
   const [activeDairy, setActiveDairy] = useState<string | null>(null);
   const [heroOk, setHeroOk] = useState(true);
+  // 記住「在哪個篩選條件下」按過顯示全部；換篩選就自動收回前 N 張
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const filterKey = `${activeRegion ?? ''}|${activeDairy ?? ''}`;
+  const showAllStores = expandedKey === filterKey;
 
   // 鮮乳品牌清單（依合作的火鍋品牌數排序，多的在前）
   const dairyBrands = useMemo(() => {
@@ -254,9 +261,18 @@ export const HotpotPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {visibleStores.map((s, i) => (
+                  {(showAllStores ? visibleStores : visibleStores.slice(0, STORE_PREVIEW)).map((s, i) => (
                     <StoreCard key={`${s.brand}-${s.store}-${i}`} store={s} />
                   ))}
+                  {!showAllStores && visibleStores.length > STORE_PREVIEW && (
+                    <button
+                      onClick={() => setExpandedKey(filterKey)}
+                      className="w-full rounded-2xl py-3 text-sm font-semibold border-2 bg-white/70 hover:bg-white transition-colors"
+                      style={{ borderColor: C.brick, color: C.brick }}
+                    >
+                      顯示其餘 {visibleStores.length - STORE_PREVIEW} 家門市 ▾
+                    </button>
+                  )}
                 </div>
               )}
 
