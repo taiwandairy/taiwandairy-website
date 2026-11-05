@@ -65,6 +65,17 @@ export const HotpotPage: React.FC = () => {
     return [...counts.entries()].sort((a, b) => b[1] - a[1]);
   }, [brands]);
 
+  // 篩選鈕括號裡的數字＝點下去會看到幾間門市（跟著縣市篩選變動）。
+  // 原本顯示的是「搭配幾個火鍋品牌」，和底下列出的店數對不起來
+  const dairyStoreCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const s of stores) {
+      if (activeRegion && s.region !== activeRegion) continue;
+      counts.set(s.dairy, (counts.get(s.dairy) || 0) + 1);
+    }
+    return counts;
+  }, [stores, activeRegion]);
+
   const totalStores = useMemo(
     () => brands.reduce((sum, b) => sum + b.storeCount, 0),
     [brands],
@@ -242,12 +253,12 @@ export const HotpotPage: React.FC = () => {
                   onClick={() => setActiveDairy(null)}
                   label="全部鮮乳品牌"
                 />
-                {dairyBrands.map(([name, count]) => (
+                {dairyBrands.map(([name]) => (
                   <FilterChip
                     key={name}
                     active={activeDairy === name}
                     onClick={() => setActiveDairy(prev => (prev === name ? null : name))}
-                    label={`${name}（${count}）`}
+                    label={`${name}（${dairyStoreCounts.get(name) || 0}）`}
                   />
                 ))}
               </div>
