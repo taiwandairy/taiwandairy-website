@@ -13,6 +13,8 @@ declare global {
 // GA 報表顯示用：虛擬路徑對應的中文頁名
 const PAGE_TITLES: Record<string, string> = {
   home: '首頁',
+  history: '協會歷程',
+  members: '協會會員',
   charter: '協會章程',
   news: '會務新知',
   promotion: '台灣鮮乳推廣活動',

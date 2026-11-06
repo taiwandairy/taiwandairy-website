@@ -18,6 +18,8 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="text-white font-bold text-lg mb-3">快速連結</h3>
             <ul className="space-y-2 text-sm">
+              <li><a href="#history" className="hover:text-white transition">協會歷程</a></li>
+              <li><a href="#members" className="hover:text-white transition">協會會員</a></li>
               <li><a href="#charter" className="hover:text-white transition">協會章程</a></li>
               <li><a href="#dairy" className="hover:text-white transition">特色鮮乳</a></li>
               <li><a href="#tasting" className="hover:text-white transition">風味品鑑</a></li>
