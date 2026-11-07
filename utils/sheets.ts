@@ -424,3 +424,56 @@ export async function fetchHotpotStores(): Promise<SheetHotpotStore[]> {
     }))
     .filter(s => s.brand);
 }
+
+// ===== 協會會員 =====
+// 會員簡歷原表含個資不能公開，這張分頁只放對外資訊；新會員入會時由秘書在這裡加一列
+
+const MEMBERS_GID = '685670287';
+
+export interface SheetMember {
+  order: number;
+  category: 'dairy' | 'partner';
+  name: string;       // 顯示名稱（品牌名優先）
+  org: string;        // 會員單位全名
+  region: string;
+  brands: string[];
+  intro: string;
+  logo: string;
+  links: { href: string; label: string }[];
+}
+
+// logo 欄可填站內路徑、https 圖片網址，或「知道連結的任何人可檢視」的 Google Drive 分享連結
+export function memberLogoSrc(raw: string): string {
+  const t = raw.trim();
+  const m = t.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w600`;
+  return safeImageSrc(t);
+}
+
+export async function fetchMembers(): Promise<SheetMember[]> {
+  const res = await fetch(buildCsvUrl(MEMBERS_GID));
+  if (!res.ok) throw new Error('Failed to fetch members');
+  const rows = csvToObjects(await res.text());
+  return rows
+    .filter(r => r['顯示'] === 'Y')
+    .map(r => {
+      const links = [
+        { href: safeHttpUrl(r['官網'] || ''), label: '官網' },
+        { href: safeHttpUrl(r['Facebook'] || ''), label: 'Facebook' },
+        { href: safeHttpUrl(r['Instagram'] || ''), label: 'Instagram' },
+      ].filter(l => l.href);
+      return {
+        order: Number(r['排序']) || 999,
+        category: (r['類別'] || '').includes('夥伴') ? 'partner' as const : 'dairy' as const,
+        name: (r['顯示名稱'] || '').trim(),
+        org: (r['會員單位'] || '').trim(),
+        region: (r['地區'] || '').trim(),
+        brands: (r['鮮乳品牌'] || '').split(/[,，、]/).map(s => s.trim()).filter(Boolean),
+        intro: r['簡介'] || '',
+        logo: memberLogoSrc(r['logo網址'] || ''),
+        links,
+      };
+    })
+    .filter(m => m.name)
+    .sort((a, b) => a.order - b.order);
+}

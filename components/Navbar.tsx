@@ -12,7 +12,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const [latestOpen, setLatestOpen] = useState(false);
 
   const isActive = (page: Page) => currentPage === page;
-  const isAboutActive = currentPage === 'charter' || currentPage === 'team';
+  const isAboutActive = currentPage === 'history' || currentPage === 'members' || currentPage === 'charter' || currentPage === 'team';
   const isLatestActive = currentPage === 'news' || currentPage === 'promotion' || currentPage === 'media' || currentPage === 'weekly' || currentPage === 'hotpot';
 
   const handleNav = (page: Page) => {
@@ -61,6 +61,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
               </button>
               {aboutOpen && (
                 <div className="absolute top-full left-0 mt-0 w-40 bg-white rounded-lg shadow-xl py-2 z-50">
+                  <button
+                    onClick={() => handleNav('history')}
+                    className={`block w-full text-left px-4 py-2 text-sm transition ${
+                      isActive('history') ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-primary'
+                    }`}
+                  >
+                    協會歷程
+                  </button>
+                  <button
+                    onClick={() => handleNav('members')}
+                    className={`block w-full text-left px-4 py-2 text-sm transition ${
+                      isActive('members') ? 'bg-blue-50 text-primary font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-primary'
+                    }`}
+                  >
+                    協會會員
+                  </button>
                   <button
                     onClick={() => handleNav('charter')}
                     className={`block w-full text-left px-4 py-2 text-sm transition ${
@@ -141,6 +157,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
           <div className="px-4 py-3 space-y-1">
             <MobileNavLink active={isActive('home')} onClick={() => handleNav('home')}>首頁</MobileNavLink>
             <div className="text-xs text-blue-300 px-3 pt-3 pb-1 font-medium uppercase tracking-wide">認識協會</div>
+            <MobileNavLink active={isActive('history')} onClick={() => handleNav('history')}>協會歷程</MobileNavLink>
+            <MobileNavLink active={isActive('members')} onClick={() => handleNav('members')}>協會會員</MobileNavLink>
             <MobileNavLink active={isActive('charter')} onClick={() => handleNav('charter')}>協會章程</MobileNavLink>
             {/* 團隊介紹入口暫時隱藏：TeamPage 理監事名單多為待補，內容齊全後再開放 */}
             <div className="border-t border-blue-800 my-2"></div>
