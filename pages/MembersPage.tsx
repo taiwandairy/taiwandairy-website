@@ -26,9 +26,8 @@ const MemberCard: React.FC<{ m: SheetMember }> = ({ m }) => (
           ))}
         </div>
       )}
-      {m.intro && <p className="text-sm text-gray-600 leading-relaxed flex-1">{m.intro}</p>}
       {m.links.length > 0 && (
-        <div className="flex gap-4 mt-4 text-sm">
+        <div className="flex gap-4 mt-auto pt-1 text-sm">
           {m.links.map(l => (
             <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-accent font-medium transition">
               {l.label} ↗
