@@ -22,13 +22,14 @@ export const Footer: React.FC = () => {
               <li><a href="#members" className="hover:text-white transition">協會會員</a></li>
               <li><a href="#charter" className="hover:text-white transition">協會章程</a></li>
               <li><a href="#dairy" className="hover:text-white transition">特色鮮乳</a></li>
-              <li><a href="#tasting" className="hover:text-white transition">風味品鑑</a></li>
-              <li><a href="#news" className="hover:text-white transition">會務新知</a></li>
-              <li><a href="#promotion" className="hover:text-white transition">台灣鮮乳推廣活動</a></li>
-              <li><a href="#weekly" className="hover:text-white transition">乳業週報</a></li>
               <li><a href="#training" className="hover:text-white transition">人才培育</a></li>
+              <li><a href="#tasting" className="hover:text-white transition">風味品鑑</a></li>
+              <li><a href="#weekly" className="hover:text-white transition">乳業週報</a></li>
               <li><a href="#exchange" className="hover:text-white transition">產業交流</a></li>
+              <li><a href="#news" className="hover:text-white transition">會務新知</a></li>
+              <li><a href="#promotion" className="hover:text-white transition">台灣乳品推廣活動</a></li>
               <li><a href="#media" className="hover:text-white transition">影音媒體</a></li>
+              <li><a href="#results" className="hover:text-white transition">年度成果</a></li>
               <li><a href="#join" className="hover:text-white transition">加入我們</a></li>
             </ul>
           </div>
