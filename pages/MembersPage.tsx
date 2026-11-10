@@ -4,21 +4,18 @@ import { fetchMembers } from '../utils/sheets';
 import type { SheetMember } from '../utils/sheets';
 
 // 資料來源：官網 CMS 試算表「協會會員」分頁（個人與專家會員不公開列出）
+// 會員頁定位＝協會會員貫穿乳品產業鏈的陣容展現，卡片只放公司名、logo、鮮乳品牌、官網
 const MemberCard: React.FC<{ m: SheetMember }> = ({ m }) => (
   <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-    <div className="h-36 flex items-center justify-center bg-white border-b border-gray-100 px-8 py-5">
+    <div className="h-44 flex items-center justify-center bg-white border-b border-gray-100 p-3">
       {m.logo ? (
-        <img src={m.logo} alt={`${m.name} logo`} loading="lazy" className="max-h-full max-w-full object-contain" />
+        <img src={m.logo} alt={`${m.name} logo`} loading="lazy" className="w-full h-full object-contain" />
       ) : (
-        <span className="text-2xl font-bold text-primary/70 tracking-wide">{m.name}</span>
+        <span className="text-2xl font-bold text-primary/70 tracking-wide text-center">{m.name}</span>
       )}
     </div>
     <div className="p-5 flex-1 flex flex-col">
-      <div className="flex items-baseline justify-between gap-3 mb-1">
-        <h3 className="text-lg font-bold text-gray-900">{m.name}</h3>
-        <span className="text-xs text-gray-500 whitespace-nowrap">{m.region}</span>
-      </div>
-      <p className="text-xs text-gray-400 mb-3">{m.org}</p>
+      <h3 className="text-lg font-bold text-gray-900 mb-3">{m.name}</h3>
       {m.brands.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {m.brands.map(b => (
@@ -26,14 +23,10 @@ const MemberCard: React.FC<{ m: SheetMember }> = ({ m }) => (
           ))}
         </div>
       )}
-      {m.links.length > 0 && (
-        <div className="flex gap-4 mt-auto pt-1 text-sm">
-          {m.links.map(l => (
-            <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-accent font-medium transition">
-              {l.label} ↗
-            </a>
-          ))}
-        </div>
+      {m.website && (
+        <a href={m.website} target="_blank" rel="noopener noreferrer" className="mt-auto pt-1 text-sm text-primary hover:text-accent font-medium transition">
+          官網 ↗
+        </a>
       )}
     </div>
   </div>
@@ -67,7 +60,7 @@ export const MembersPage: React.FC = () => {
           </div>
           {status && <p className="text-gray-500">{status}</p>}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {dairyMembers.map(m => <MemberCard key={m.name + m.org} m={m} />)}
+            {dairyMembers.map(m => <MemberCard key={m.name} m={m} />)}
           </div>
         </div>
       </section>
@@ -78,7 +71,7 @@ export const MembersPage: React.FC = () => {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">產業相關夥伴</h2>
           <p className="text-gray-600 mb-8">從數位服務到風味專業，支持酪農產業的夥伴</p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {partnerMembers.map(m => <MemberCard key={m.name + m.org} m={m} />)}
+            {partnerMembers.map(m => <MemberCard key={m.name} m={m} />)}
           </div>
         </div>
       </section>
