@@ -464,3 +464,48 @@ export async function fetchMembers(): Promise<SheetMember[]> {
     .filter(m => m.name)
     .sort((a, b) => a.order - b.order);
 }
+
+// ── 年度成果（CMS「年度成果」分頁）────────────────────────────
+// 一列一筆：類型＝「指標」是該年度最上方的大數字，「活動」是時間軸上的一個節點
+const RESULTS_GID = '1287408448';
+
+export interface ResultKpi { year: string; order: number; label: string; value: string; note: string }
+export interface ResultEvent { year: string; order: number; date: string; title: string; summary: string; organizer: string; image: string; link: string }
+export interface YearResults { year: string; kpis: ResultKpi[]; events: ResultEvent[] }
+
+// 連結欄另外允許站內頁面錨點（例：#hotpot）
+function resultLink(raw: string): string {
+  const t = raw.trim();
+  if (/^#[\w-]+$/.test(t)) return t;
+  return safeLinkUrl(t);
+}
+
+export async function fetchResults(): Promise<YearResults[]> {
+  const res = await fetch(buildCsvUrl(RESULTS_GID));
+  if (!res.ok) throw new Error('Failed to fetch results');
+  const rows = csvToObjects(await res.text()).filter(r => r['顯示'] === 'Y' && (r['年度'] || '').trim());
+  const byYear = new Map<string, YearResults>();
+  for (const r of rows) {
+    const year = r['年度'].trim();
+    if (!byYear.has(year)) byYear.set(year, { year, kpis: [], events: [] });
+    const y = byYear.get(year)!;
+    const order = Number(r['排序']) || 999;
+    const title = (r['標題'] || '').trim();
+    if (!title) continue;
+    if ((r['類型'] || '').includes('指標')) {
+      y.kpis.push({ year, order, label: title, value: (r['數值'] || '').trim(), note: (r['說明'] || '').trim() });
+    } else {
+      y.events.push({
+        year, order, title,
+        date: (r['日期'] || '').trim(),
+        summary: (r['說明'] || '').trim(),
+        organizer: (r['舉辦單位'] || '').trim(),
+        image: safeImageSrc(r['圖片網址'] || ''),
+        link: resultLink(r['連結'] || ''),
+      });
+    }
+  }
+  const years = [...byYear.values()];
+  years.forEach(y => { y.kpis.sort((a, b) => a.order - b.order); y.events.sort((a, b) => a.order - b.order); });
+  return years.sort((a, b) => b.year.localeCompare(a.year));
+}
