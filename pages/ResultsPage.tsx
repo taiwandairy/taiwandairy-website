@@ -1,23 +1,46 @@
 import React, { useState } from 'react';
 import { useSheetData } from '../hooks/useSheetData';
 import { fetchResults, isExternalLink } from '../utils/sheets';
-import type { YearResults, ResultEvent } from '../utils/sheets';
+import type { YearResults, ResultEvent, ResultPhoto } from '../utils/sheets';
 
 // 資料來源：官網 CMS 試算表「年度成果」分頁（一個年度一個分頁籤；指標＝最上方大數字，活動＝時間軸節點）
 // 只放可對外公開的內容：不放經費明細、委託廠商、聯絡電話、簽到與領據等文件
 
-// 直式海報用 contain、照片用 cover
-const EventImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+// 格狀小圖一律裁切填滿；只有單張大圖遇到直式海報才改 contain 完整顯示
+const Photo: React.FC<{ src: string; alt: string; big?: boolean }> = ({ src, alt, big }) => {
   const [portrait, setPortrait] = useState(false);
   return (
-    <div className={`rounded-xl overflow-hidden shadow-md ${portrait ? 'bg-gray-warm' : ''}`}>
+    <div className={`rounded-lg overflow-hidden shadow-sm ${portrait ? 'bg-gray-warm' : ''}`}>
       <img
         src={src}
         alt={alt}
         loading="lazy"
-        onLoad={e => setPortrait(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth)}
-        className={`w-full h-56 md:h-64 ${portrait ? 'object-contain' : 'object-cover'}`}
+        onLoad={e => big && setPortrait(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth * 1.15)}
+        className={`w-full ${big ? 'h-56 md:h-64' : 'aspect-[3/2]'} ${portrait ? 'object-contain' : 'object-cover'}`}
       />
+    </div>
+  );
+};
+
+// 1 張滿版；2～4 張排 2 欄，每張下方附說明（同「協會歷程」2023 的排法）
+const PhotoGrid: React.FC<{ photos: ResultPhoto[]; title: string }> = ({ photos, title }) => {
+  if (photos.length === 1) {
+    const p = photos[0];
+    return (
+      <figure>
+        <Photo src={p.src} alt={p.caption || title} big />
+        {p.caption && <figcaption className="text-xs text-gray-500 mt-1">{p.caption}</figcaption>}
+      </figure>
+    );
+  }
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {photos.map(p => (
+        <figure key={p.src}>
+          <Photo src={p.src} alt={p.caption || title} />
+          {p.caption && <figcaption className="text-xs text-gray-500 mt-1 leading-snug">{p.caption}</figcaption>}
+        </figure>
+      ))}
     </div>
   );
 };
@@ -44,7 +67,7 @@ const EventItem: React.FC<{ e: ResultEvent; imageRight: boolean }> = ({ e, image
         )}
       </div>
       <div className={imageRight ? 'md:order-2' : 'md:order-1'}>
-        {e.image && <EventImage src={e.image} alt={e.title} />}
+        {e.photos.length > 0 && <PhotoGrid photos={e.photos} title={e.title} />}
       </div>
     </div>
   </li>
