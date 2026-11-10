@@ -9,16 +9,19 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [industryOpen, setIndustryOpen] = useState(false);
   const [latestOpen, setLatestOpen] = useState(false);
 
   const isActive = (page: Page) => currentPage === page;
   const isAboutActive = currentPage === 'history' || currentPage === 'members' || currentPage === 'charter' || currentPage === 'team';
-  const isLatestActive = currentPage === 'news' || currentPage === 'promotion' || currentPage === 'media' || currentPage === 'weekly' || currentPage === 'hotpot';
+  const isIndustryActive = currentPage === 'weekly' || currentPage === 'exchange';
+  const isLatestActive = currentPage === 'news' || currentPage === 'promotion' || currentPage === 'media' || currentPage === 'hotpot' || currentPage === 'results';
 
   const handleNav = (page: Page) => {
     onNavigate(page);
     setMobileOpen(false);
     setAboutOpen(false);
+    setIndustryOpen(false);
     setLatestOpen(false);
   };
 
@@ -91,37 +94,21 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             </div>
 
             <NavLink active={isActive('dairy')} onClick={() => handleNav('dairy')}>特色鮮乳</NavLink>
+            <NavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</NavLink>
             <NavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</NavLink>
 
-            {/* Latest Info Dropdown（會務新知／台灣鮮乳推廣活動／影音媒體／乳業週報） */}
-            <div
-              className="relative"
-              onMouseEnter={() => setLatestOpen(true)}
-              onMouseLeave={() => setLatestOpen(false)}
-            >
-              <button
-                className={`px-4 py-2 rounded-md text-sm font-medium transition ${
-                  isLatestActive ? 'bg-primary-light text-white' : 'text-blue-100 hover:bg-primary-light hover:text-white'
-                }`}
-              >
-                最新資訊
-                <svg className="inline-block ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {latestOpen && (
-                <div className="absolute top-full left-0 mt-0 w-48 bg-white rounded-lg shadow-xl py-2 z-50">
-                  <DropdownLink active={isActive('hotpot')} onClick={() => handleNav('hotpot')}>國產鮮乳火鍋季</DropdownLink>
-                  <DropdownLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</DropdownLink>
-                  <DropdownLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>台灣鮮乳推廣活動</DropdownLink>
-                  <DropdownLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</DropdownLink>
-                  <DropdownLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</DropdownLink>
-                </div>
-              )}
-            </div>
+            <NavDropdown label="產業資訊" active={isIndustryActive} open={industryOpen} setOpen={setIndustryOpen}>
+              <DropdownLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</DropdownLink>
+              <DropdownLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</DropdownLink>
+            </NavDropdown>
 
-            <NavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</NavLink>
-            <NavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</NavLink>
+            <NavDropdown label="協會動態" active={isLatestActive} open={latestOpen} setOpen={setLatestOpen}>
+              <DropdownLink active={isActive('hotpot')} onClick={() => handleNav('hotpot')}>國產鮮乳火鍋季</DropdownLink>
+              <DropdownLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</DropdownLink>
+              <DropdownLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>台灣乳品推廣活動</DropdownLink>
+              <DropdownLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</DropdownLink>
+              <DropdownLink active={isActive('results')} onClick={() => handleNav('results')}>年度成果</DropdownLink>
+            </NavDropdown>
 
             {/* 加入我們：招募 CTA，用 accent 金色與其他項目區隔 */}
             <button
@@ -163,16 +150,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             {/* 團隊介紹入口暫時隱藏：TeamPage 理監事名單多為待補，內容齊全後再開放 */}
             <div className="border-t border-blue-800 my-2"></div>
             <MobileNavLink active={isActive('dairy')} onClick={() => handleNav('dairy')}>特色鮮乳</MobileNavLink>
+            <MobileNavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</MobileNavLink>
             <MobileNavLink active={isActive('tasting')} onClick={() => handleNav('tasting')}>風味品鑑</MobileNavLink>
-            <div className="text-xs text-blue-300 px-3 pt-3 pb-1 font-medium uppercase tracking-wide">最新資訊</div>
+            <div className="text-xs text-blue-300 px-3 pt-3 pb-1 font-medium uppercase tracking-wide">產業資訊</div>
+            <MobileNavLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</MobileNavLink>
+            <MobileNavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</MobileNavLink>
+            <div className="text-xs text-blue-300 px-3 pt-3 pb-1 font-medium uppercase tracking-wide">協會動態</div>
             <MobileNavLink active={isActive('hotpot')} onClick={() => handleNav('hotpot')}>國產鮮乳火鍋季</MobileNavLink>
             <MobileNavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</MobileNavLink>
-            <MobileNavLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>台灣鮮乳推廣活動</MobileNavLink>
+            <MobileNavLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>台灣乳品推廣活動</MobileNavLink>
             <MobileNavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</MobileNavLink>
-            <MobileNavLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</MobileNavLink>
-            <div className="border-t border-blue-800 my-2"></div>
-            <MobileNavLink active={isActive('training')} onClick={() => handleNav('training')}>人才培育</MobileNavLink>
-            <MobileNavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</MobileNavLink>
+            <MobileNavLink active={isActive('results')} onClick={() => handleNav('results')}>年度成果</MobileNavLink>
             <div className="border-t border-blue-800 my-2"></div>
             <button
               onClick={() => handleNav('join')}
@@ -186,6 +174,22 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
     </header>
   );
 };
+
+const NavDropdown: React.FC<{ label: string; active: boolean; open: boolean; setOpen: (v: boolean) => void; children: React.ReactNode }> = ({ label, active, open, setOpen, children }) => (
+  <div className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+    <button
+      className={`px-4 py-2 rounded-md text-sm font-medium transition ${
+        active ? 'bg-primary-light text-white' : 'text-blue-100 hover:bg-primary-light hover:text-white'
+      }`}
+    >
+      {label}
+      <svg className="inline-block ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+    {open && <div className="absolute top-full left-0 mt-0 w-48 bg-white rounded-lg shadow-xl py-2 z-50">{children}</div>}
+  </div>
+);
 
 const DropdownLink: React.FC<{ active: boolean; onClick: () => void; children: React.ReactNode }> = ({ active, onClick, children }) => (
   <button
