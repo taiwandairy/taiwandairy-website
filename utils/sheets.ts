@@ -433,13 +433,10 @@ const MEMBERS_GID = '685670287';
 export interface SheetMember {
   order: number;
   category: 'dairy' | 'partner';
-  name: string;       // 顯示名稱（品牌名優先）
-  org: string;        // 會員單位全名
-  region: string;
+  name: string;       // 顯示名稱（公司名）
   brands: string[];
-  intro: string;
   logo: string;
-  links: { href: string; label: string }[];
+  website: string;    // 官網；地區、簡介、FB、IG 欄保留在試算表備查，頁面不顯示
 }
 
 // logo 欄可填站內路徑、https 圖片網址，或「知道連結的任何人可檢視」的 Google Drive 分享連結
@@ -456,24 +453,14 @@ export async function fetchMembers(): Promise<SheetMember[]> {
   const rows = csvToObjects(await res.text());
   return rows
     .filter(r => r['顯示'] === 'Y')
-    .map(r => {
-      const links = [
-        { href: safeHttpUrl(r['官網'] || ''), label: '官網' },
-        { href: safeHttpUrl(r['Facebook'] || ''), label: 'Facebook' },
-        { href: safeHttpUrl(r['Instagram'] || ''), label: 'Instagram' },
-      ].filter(l => l.href);
-      return {
-        order: Number(r['排序']) || 999,
-        category: (r['類別'] || '').includes('夥伴') ? 'partner' as const : 'dairy' as const,
-        name: (r['顯示名稱'] || '').trim(),
-        org: (r['會員單位'] || '').trim(),
-        region: (r['地區'] || '').trim(),
-        brands: (r['鮮乳品牌'] || '').split(/[,，、]/).map(s => s.trim()).filter(Boolean),
-        intro: r['簡介'] || '',
-        logo: memberLogoSrc(r['logo網址'] || ''),
-        links,
-      };
-    })
+    .map(r => ({
+      order: Number(r['排序']) || 999,
+      category: (r['類別'] || '').includes('夥伴') ? 'partner' as const : 'dairy' as const,
+      name: (r['顯示名稱'] || '').trim(),
+      brands: (r['鮮乳品牌'] || '').split(/[,，、]/).map(s => s.trim()).filter(Boolean),
+      logo: memberLogoSrc(r['logo網址'] || ''),
+      website: safeHttpUrl(r['官網'] || ''),
+    }))
     .filter(m => m.name)
     .sort((a, b) => a.order - b.order);
 }
