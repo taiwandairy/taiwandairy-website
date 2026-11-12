@@ -103,11 +103,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             </NavDropdown>
 
             <NavDropdown label="協會動態" active={isLatestActive} open={latestOpen} setOpen={setLatestOpen}>
-              <DropdownLink active={isActive('hotpot')} onClick={() => handleNav('hotpot')}>國產鮮乳火鍋季</DropdownLink>
-              <DropdownLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</DropdownLink>
               <DropdownLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>台灣乳品推廣活動</DropdownLink>
-              <DropdownLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</DropdownLink>
+              <DropdownLink active={isActive('hotpot')} onClick={() => handleNav('hotpot')}>國產鮮乳火鍋季</DropdownLink>
               <DropdownLink active={isActive('results')} onClick={() => handleNav('results')}>年度成果</DropdownLink>
+              <DropdownLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</DropdownLink>
+              <DropdownLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</DropdownLink>
             </NavDropdown>
 
             {/* 加入我們：招募 CTA，用 accent 金色與其他項目區隔 */}
@@ -156,11 +156,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <MobileNavLink active={isActive('weekly')} onClick={() => handleNav('weekly')}>乳業週報</MobileNavLink>
             <MobileNavLink active={isActive('exchange')} onClick={() => handleNav('exchange')}>產業交流</MobileNavLink>
             <div className="text-xs text-blue-300 px-3 pt-3 pb-1 font-medium uppercase tracking-wide">協會動態</div>
-            <MobileNavLink active={isActive('hotpot')} onClick={() => handleNav('hotpot')}>國產鮮乳火鍋季</MobileNavLink>
-            <MobileNavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</MobileNavLink>
             <MobileNavLink active={isActive('promotion')} onClick={() => handleNav('promotion')}>台灣乳品推廣活動</MobileNavLink>
-            <MobileNavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</MobileNavLink>
+            <MobileNavLink active={isActive('hotpot')} onClick={() => handleNav('hotpot')}>國產鮮乳火鍋季</MobileNavLink>
             <MobileNavLink active={isActive('results')} onClick={() => handleNav('results')}>年度成果</MobileNavLink>
+            <MobileNavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</MobileNavLink>
+            <MobileNavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</MobileNavLink>
             <div className="border-t border-blue-800 my-2"></div>
             <button
               onClick={() => handleNav('join')}
