@@ -38,6 +38,7 @@ const PASSAGE_PLATFORMS = [
   { name: 'HamiVideo', url: 'https://hamivideo.hinet.net/product/261230.do?cs=2' },
   { name: 'Giloo 紀實影音', url: 'https://giloo.ist/zh-TW/episodes/1263/' },
   { name: 'friDay 影音', url: 'https://video.friday.tw/movie/detail/106172' },
+  { name: 'CATCHPLAY+', url: 'https://www.catchplay.com/tw/video/c7441af2-5b74-4f5b-9006-53d9914bbe9e' },
 ];
 
 export const TrainingPage: React.FC = () => {
