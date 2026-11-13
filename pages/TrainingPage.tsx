@@ -30,6 +30,17 @@ const SCHOOLS_INTL = [
   { flag: '🇦🇺', name: '昆士蘭大學', count: null },
 ];
 
+// 紀錄片《通道》（The Passage，2021，導演柯智元）
+// 預告片用外連＋縮圖，不嵌 iframe（vercel.json 的 CSP 為 frame-src 'none'）
+const PASSAGE_TRAILER_URL = 'https://www.youtube.com/watch?v=ly27tmEN9SU';
+const PASSAGE_TRAILER_THUMB = 'https://i.ytimg.com/vi/ly27tmEN9SU/hqdefault.jpg';
+const PASSAGE_PLATFORMS = [
+  { name: 'HamiVideo', url: 'https://hamivideo.hinet.net/product/261230.do?cs=2' },
+  { name: 'Giloo 紀實影音', url: 'https://giloo.ist/zh-TW/episodes/1263/' },
+  { name: 'friDay 影音', url: 'https://video.friday.tw/movie/detail/106172' },
+  { name: 'CATCHPLAY+', url: 'https://www.catchplay.com/tw/video/c7441af2-5b74-4f5b-9006-53d9914bbe9e' },
+];
+
 export const TrainingPage: React.FC = () => {
   return (
     <div>
@@ -217,6 +228,71 @@ export const TrainingPage: React.FC = () => {
 
           <p className="text-center text-sm text-gray-400 mt-6">
             報告連結待更新，檔案上傳後即可下載。
+          </p>
+        </div>
+      </section>
+
+      {/* 紀錄片《通道》 */}
+      <section className="py-12 md:py-20 bg-gray-warm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">紀錄片《通道》</h2>
+            <div className="w-20 h-1 bg-accent mx-auto"></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center">
+            <a
+              href={PASSAGE_TRAILER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="在 YouTube 觀看《通道》預告片（另開新視窗）"
+              className="relative block aspect-video rounded-2xl overflow-hidden shadow-md bg-gray-900 group"
+            >
+              <img
+                src={PASSAGE_TRAILER_THUMB}
+                alt="紀錄片《通道》預告片畫面"
+                loading="lazy"
+                className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+              />
+              <span className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition">
+                <span className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                  <svg className="w-7 h-7 text-primary ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </span>
+              </span>
+            </a>
+
+            <div>
+              <div className="text-xs font-bold tracking-wider text-accent mb-2">The Passage · 2021 新北市紀錄片獎優選影片</div>
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">通道</h3>
+              <p className="text-gray-600 leading-relaxed mb-6">
+                2021 年的台灣紀錄短片，由柯智元執導，全片約 29 分鐘，記錄大動物獸醫師龔建嘉在牧場現場的工作與日常，帶觀眾看見乳牛獸醫這份工作的樣貌。
+              </p>
+              <a
+                href={PASSAGE_TRAILER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-light transition"
+              >
+                觀看預告片
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <p className="text-xs text-gray-400 mt-8 leading-relaxed text-center">
+            完整影片可於以下線上平台觀賞：
+            {PASSAGE_PLATFORMS.map((p, i) => (
+              <React.Fragment key={p.url}>
+                {i > 0 && '、'}
+                <a href={p.url} target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline whitespace-nowrap">
+                  {p.name}
+                </a>
+              </React.Fragment>
+            ))}
           </p>
         </div>
       </section>
