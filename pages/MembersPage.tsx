@@ -7,7 +7,7 @@ import type { SheetMember } from '../utils/sheets';
 // 會員頁定位＝協會會員貫穿乳品產業鏈的陣容展現，卡片只放公司名、logo、鮮乳品牌、官網
 const MemberCard: React.FC<{ m: SheetMember }> = ({ m }) => (
   <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-    <div className="h-44 flex items-center justify-center bg-white border-b border-gray-100 p-3">
+    <div className="h-44 flex items-center justify-center bg-white border-b border-gray-100 px-12 py-9">
       {m.logo ? (
         <img src={m.logo} alt={`${m.name} logo`} loading="lazy" className="w-full h-full object-contain" />
       ) : (
