@@ -11,21 +11,21 @@ const TRAINING_PHOTOS = [
 
 // 學生來自哪裡（累計受訓學員的來源校系）
 const SCHOOLS_TW = [
-  { name: '國立臺灣大學', count: 43 },
-  { name: '國立中興大學', count: 17 },
-  { name: '國立嘉義大學', count: 16 },
-  { name: '亞洲大學', count: 12 },
-  { name: '國立屏東科技大學', count: 8 },
-  { name: '東海大學', count: 3 },
-  { name: '國立宜蘭大學', count: 3 },
+  { name: '國立臺灣大學', count: 43, logo: '/images/training/schools/ntu.png' },
+  { name: '國立中興大學', count: 17, logo: '/images/training/schools/nchu.png' },
+  { name: '國立嘉義大學', count: 16, logo: '/images/training/schools/ncyu.png' },
+  { name: '亞洲大學', count: 12, logo: '/images/training/schools/asia.png' },
+  { name: '國立屏東科技大學', count: 8, logo: '/images/training/schools/npust.png' },
+  { name: '東海大學', count: 3, logo: '/images/training/schools/thu.png' },
+  { name: '國立宜蘭大學', count: 3, logo: '/images/training/schools/niu.png' },
 ];
 
 const SCHOOLS_INTL = [
-  { flag: '🇦🇺', name: '墨爾本大學', count: 1 },
-  { flag: '🇦🇺', name: '雪梨大學', count: 1 },
-  { flag: '🇮🇪', name: '都柏林大學', count: 1 },
-  { flag: '🇭🇰', name: '香港', count: 1 },
-  { flag: '🇦🇺', name: '昆士蘭大學', count: null as number | null },
+  { flag: '🇦🇺', name: '墨爾本大學', count: 1, logo: '/images/training/schools/melbourne.png' },
+  { flag: '🇦🇺', name: '雪梨大學', count: 1, logo: '/images/training/schools/sydney.png' },
+  { flag: '🇮🇪', name: '都柏林大學', count: 1, logo: '/images/training/schools/ucd.png' },
+  { flag: '🇭🇰', name: '香港', count: 1, logo: '' },
+  { flag: '🇦🇺', name: '昆士蘭大學', count: null as number | null, logo: '/images/training/schools/uq.png' },
 ];
 
 // 紀錄片《通道》（The Passage，2021，導演柯智元）
@@ -38,6 +38,11 @@ const PASSAGE_PLATFORMS = [
   { name: 'friDay 影音', url: 'https://video.friday.tw/movie/detail/106172' },
   { name: 'CATCHPLAY+', url: 'https://www.catchplay.com/tw/video/c7441af2-5b74-4f5b-9006-53d9914bbe9e' },
 ];
+
+// 校徽等比例縮放，不裁切、不變形
+const SchoolLogo: React.FC<{ src: string; name: string }> = ({ src, name }) => (
+  <img src={src} alt={`${name}校徽`} loading="lazy" className="w-11 h-11 shrink-0 object-contain" />
+);
 
 const TESTIMONIAL_YEARS = Array.from(new Set(TESTIMONIALS.map(t => t.year))).sort((a, b) => b - a);
 
@@ -245,9 +250,12 @@ export const TrainingPage: React.FC = () => {
             <h3 className="text-sm font-bold text-gray-500 tracking-wider mb-4">台灣</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {SCHOOLS_TW.map((s, i) => (
-                <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4">
-                  <div className="text-base font-bold text-gray-900">{s.name}</div>
-                  <div className="text-xs text-gray-500 mt-1">累計 {s.count} 位學員</div>
+                <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4 flex items-center gap-3">
+                  <SchoolLogo src={s.logo} name={s.name} />
+                  <div className="min-w-0">
+                    <div className="text-base font-bold text-gray-900">{s.name}</div>
+                    <div className="text-xs text-gray-500 mt-1">累計 {s.count} 位學員</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -258,10 +266,12 @@ export const TrainingPage: React.FC = () => {
             <h3 className="text-sm font-bold text-gray-500 tracking-wider mb-4">海外</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {SCHOOLS_INTL.map((s, i) => (
-                <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4">
-                  <div className="text-lg mb-1">{s.flag}</div>
-                  <div className="text-base font-bold text-gray-900">{s.name}</div>
-                  {s.count !== null && <div className="text-xs text-gray-500 mt-1">累計 {s.count} 位學員</div>}
+                <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4 flex items-center gap-3">
+                  {s.logo ? <SchoolLogo src={s.logo} name={s.name} /> : <div className="w-11 shrink-0 text-2xl text-center">{s.flag}</div>}
+                  <div className="min-w-0">
+                    <div className="text-base font-bold text-gray-900">{s.logo && <span className="mr-1.5 text-sm">{s.flag}</span>}{s.name}</div>
+                    {s.count !== null && <div className="text-xs text-gray-500 mt-1">累計 {s.count} 位學員</div>}
+                  </div>
                 </div>
               ))}
             </div>
