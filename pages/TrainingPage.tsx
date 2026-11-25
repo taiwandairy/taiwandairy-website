@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { TrainingResults } from '../components/TrainingResults';
+import { TESTIMONIALS } from '../utils/trainingTestimonials';
+import type { Testimonial } from '../utils/trainingTestimonials';
 
 const TRAINING_PHOTOS = [
   { src: '/images/training/training-1.jpg', alt: '牧場實習 — 學員與小牛互動' },
@@ -6,28 +9,23 @@ const TRAINING_PHOTOS = [
   { src: '/images/training/training-3.jpg', alt: '乳牛手術實作訓練' },
 ];
 
-const ANNUAL_REPORTS = [
-  { year: 2025, title: '114 年度人才培育計畫成果報告', link: '#' },
-  { year: 2024, title: '113 年度人才培育計畫成果報告', link: '#' },
-];
-
 // 學生來自哪裡（累計受訓學員的來源校系）
 const SCHOOLS_TW = [
-  { name: '國立臺灣大學', count: 43 },
-  { name: '國立中興大學', count: 17 },
-  { name: '國立嘉義大學', count: 16 },
-  { name: '亞洲大學', count: 12 },
-  { name: '國立屏東科技大學', count: 8 },
-  { name: '東海大學', count: 3 },
-  { name: '國立宜蘭大學', count: 3 },
+  { name: '國立臺灣大學', count: 43, logo: '/images/training/schools/ntu.png' },
+  { name: '國立中興大學', count: 17, logo: '/images/training/schools/nchu.png' },
+  { name: '國立嘉義大學', count: 16, logo: '/images/training/schools/ncyu.png' },
+  { name: '亞洲大學', count: 12, logo: '/images/training/schools/asia.png' },
+  { name: '國立屏東科技大學', count: 8, logo: '/images/training/schools/npust.png' },
+  { name: '東海大學', count: 3, logo: '/images/training/schools/thu.png' },
+  { name: '國立宜蘭大學', count: 3, logo: '/images/training/schools/niu.png' },
 ];
 
 const SCHOOLS_INTL = [
-  { flag: '🇦🇺', name: '墨爾本大學', count: 1 },
-  { flag: '🇦🇺', name: '雪梨大學', count: 1 },
-  { flag: '🇮🇪', name: '都柏林大學', count: 1 },
-  { flag: '🇭🇰', name: '香港', count: 1 },
-  { flag: '🇦🇺', name: '昆士蘭大學', count: null },
+  { flag: '🇦🇺', name: '墨爾本大學', count: 1, logo: '/images/training/schools/melbourne.png' },
+  { flag: '🇦🇺', name: '雪梨大學', count: 1, logo: '/images/training/schools/sydney.png' },
+  { flag: '🇮🇪', name: '都柏林大學', count: 1, logo: '/images/training/schools/ucd.png' },
+  { flag: '🇭🇰', name: '香港', count: 1, logo: '' },
+  { flag: '🇦🇺', name: '昆士蘭大學', count: null as number | null, logo: '/images/training/schools/uq.png' },
 ];
 
 // 紀錄片《通道》（The Passage，2021，導演柯智元）
@@ -40,6 +38,117 @@ const PASSAGE_PLATFORMS = [
   { name: 'friDay 影音', url: 'https://video.friday.tw/movie/detail/106172' },
   { name: 'CATCHPLAY+', url: 'https://www.catchplay.com/tw/video/c7441af2-5b74-4f5b-9006-53d9914bbe9e' },
 ];
+
+// 校徽等比例縮放，不裁切、不變形
+const SchoolLogo: React.FC<{ src: string; name: string }> = ({ src, name }) => (
+  <img src={src} alt={`${name}校徽`} loading="lazy" className="w-11 h-11 shrink-0 object-contain" />
+);
+
+const TESTIMONIAL_YEARS = Array.from(new Set(TESTIMONIALS.map(t => t.year))).sort((a, b) => b - a);
+
+const TestimonialCard: React.FC<{ t: Testimonial }> = ({ t }) => {
+  const [open, setOpen] = useState(false);
+  const long = t.paragraphs.join('').length > 110;
+  return (
+    <article className="snap-start shrink-0 w-[82%] sm:w-[340px] bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+      <div className="relative aspect-[8/9] bg-gray-warm">
+        <img src={t.photo} alt={`${t.name}在牧場實習`} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+      </div>
+      <div className="p-5 flex-1 flex flex-col">
+        <div className={`relative text-sm text-gray-700 leading-relaxed space-y-3 ${open || !long ? '' : 'max-h-[8.5rem] overflow-hidden'}`}>
+          {t.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
+          {long && !open && <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent" aria-hidden="true" />}
+        </div>
+        {long && (
+          <button
+            type="button"
+            onClick={() => setOpen(o => !o)}
+            aria-expanded={open}
+            className="self-start mt-2 text-sm text-primary font-medium hover:text-accent transition"
+          >
+            {open ? '收合' : '…看完整心得'}
+          </button>
+        )}
+        <div className="mt-auto pt-4">
+          <div className="border-t border-gray-100 pt-3">
+            <div className="text-sm font-bold text-gray-900">{t.name}</div>
+            <div className="text-xs text-gray-500 mt-0.5">{t.school}｜{t.year}</div>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+const TestimonialsSection: React.FC = () => {
+  const [year, setYear] = useState(TESTIMONIAL_YEARS[0]);
+  const track = useRef<HTMLDivElement>(null);
+  const list = TESTIMONIALS.filter(t => t.year === year);
+
+  const pickYear = (y: number) => {
+    setYear(y);
+    track.current?.scrollTo({ left: 0 });
+  };
+  const slide = (dir: number) => {
+    const el = track.current;
+    if (el) el.scrollBy({ left: dir * Math.min(el.clientWidth * 0.9, 720), behavior: 'smooth' });
+  };
+
+  return (
+    <section className="py-12 md:py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">學生心得</h2>
+          <div className="w-20 h-1 bg-accent mx-auto mb-6"></div>
+          <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            一起看看參與牧場實習的同學們，在牧場的身影和心得回饋。
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 mb-5">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="選擇年度">
+            {TESTIMONIAL_YEARS.map(y => (
+              <button
+                key={y}
+                type="button"
+                onClick={() => pickYear(y)}
+                aria-pressed={y === year}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${
+                  y === year ? 'bg-primary text-white' : 'bg-gray-warm text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {y}
+              </button>
+            ))}
+          </div>
+          <div className="hidden sm:flex gap-2">
+            {[-1, 1].map(dir => (
+              <button
+                key={dir}
+                type="button"
+                onClick={() => slide(dir)}
+                aria-label={dir < 0 ? '上一張' : '下一張'}
+                className="w-10 h-10 rounded-full border border-gray-200 bg-white text-gray-600 hover:border-primary hover:text-primary transition flex items-center justify-center"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={dir < 0 ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'} />
+                </svg>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div
+          ref={track}
+          className="flex items-start gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-pl-4 sm:scroll-pl-0"
+        >
+          {list.map(t => <TestimonialCard key={t.photo} t={t} />)}
+        </div>
+        <p className="text-xs text-gray-400 mt-2 sm:hidden">← 左右滑動看更多 →</p>
+      </div>
+    </section>
+  );
+};
 
 export const TrainingPage: React.FC = () => {
   return (
@@ -70,22 +179,25 @@ export const TrainingPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Highlights */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-12 max-w-lg mx-auto">
-            <div className="text-center p-6 bg-blue-50 rounded-xl">
-              <div className="text-3xl font-black text-primary mb-2">100+</div>
-              <div className="text-sm text-gray-600">累計受訓學員</div>
-            </div>
-            <div className="text-center p-6 bg-blue-50 rounded-xl">
-              <div className="text-3xl font-black text-primary mb-2">20+</div>
-              <div className="text-sm text-gray-600">合作專家講師</div>
-            </div>
+        </div>
+      </section>
+
+      {/* 計畫成果 */}
+      <section className="py-12 md:py-20 bg-gray-warm">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">計畫成果</h2>
+            <div className="w-20 h-1 bg-accent mx-auto mb-6"></div>
+            <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              牧場人才培訓計畫自 2015 年起，歷年累計參與人次與學員回饋。
+            </p>
           </div>
+          <TrainingResults />
         </div>
       </section>
 
       {/* Photo Gallery */}
-      <section className="py-12 md:py-20 bg-gray-warm">
+      <section className="py-12 md:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">活動花絮</h2>
@@ -94,7 +206,7 @@ export const TrainingPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {TRAINING_PHOTOS.map((photo, i) => (
-              <div key={i} className="aspect-[4/3] bg-white rounded-xl overflow-hidden shadow-sm group">
+              <div key={i} className="aspect-[4/3] bg-gray-warm rounded-xl overflow-hidden shadow-sm group">
                 <img
                   src={photo.src}
                   alt={photo.alt}
@@ -123,7 +235,7 @@ export const TrainingPage: React.FC = () => {
       </section>
 
       {/* 學生來自哪裡 */}
-      <section className="py-12 md:py-20">
+      <section className="py-12 md:py-20 bg-gray-warm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">學生來自哪裡</h2>
@@ -138,10 +250,12 @@ export const TrainingPage: React.FC = () => {
             <h3 className="text-sm font-bold text-gray-500 tracking-wider mb-4">台灣</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {SCHOOLS_TW.map((s, i) => (
-                <div key={i} className="relative bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4">
-                  <span className="absolute top-3 right-3 text-xs font-bold text-accent bg-gray-warm rounded-full px-2 py-0.5">{s.count}</span>
-                  <div className="text-base font-bold text-gray-900 pr-8">{s.name}</div>
-                  <div className="text-xs text-gray-400 mt-1">累計 {s.count} 位學員</div>
+                <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4 flex items-center gap-3">
+                  <SchoolLogo src={s.logo} name={s.name} />
+                  <div className="min-w-0">
+                    <div className="text-base font-bold text-gray-900">{s.name}</div>
+                    <div className="text-xs text-gray-500 mt-1">累計 {s.count} 位學員</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -152,12 +266,12 @@ export const TrainingPage: React.FC = () => {
             <h3 className="text-sm font-bold text-gray-500 tracking-wider mb-4">海外</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {SCHOOLS_INTL.map((s, i) => (
-                <div key={i} className="relative bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4">
-                  {s.count !== null && (
-                    <span className="absolute top-3 right-3 text-xs font-bold text-accent bg-gray-warm rounded-full px-2 py-0.5">{s.count}</span>
-                  )}
-                  <div className="text-lg mb-1">{s.flag}</div>
-                  <div className="text-base font-bold text-gray-900 pr-8">{s.name}</div>
+                <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-4 flex items-center gap-3">
+                  {s.logo ? <SchoolLogo src={s.logo} name={s.name} /> : <div className="w-11 shrink-0 text-2xl text-center">{s.flag}</div>}
+                  <div className="min-w-0">
+                    <div className="text-base font-bold text-gray-900">{s.logo && <span className="mr-1.5 text-sm">{s.flag}</span>}{s.name}</div>
+                    {s.count !== null && <div className="text-xs text-gray-500 mt-1">累計 {s.count} 位學員</div>}
+                  </div>
                 </div>
               ))}
             </div>
@@ -169,68 +283,7 @@ export const TrainingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 執行秘書 */}
-      <section className="py-12 md:py-20 bg-gray-warm">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">認識執行團隊</h2>
-            <div className="w-20 h-1 bg-accent mx-auto"></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 items-center">
-            <figure className="rounded-2xl overflow-hidden shadow-md bg-white">
-              <img
-                src="/images/team/tinghsuan.jpg"
-                alt="張庭瑄 執行秘書"
-                className="w-full h-auto object-cover"
-              />
-            </figure>
-            <div>
-              <div className="text-xs font-bold tracking-wider text-accent mb-2">執行秘書 · 台灣農酪產業永續發展協會</div>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">張庭瑄</h3>
-              <p className="text-gray-600 leading-relaxed">
-                統籌協會人才培育計畫的各項安排——媒合牧場與學校、聯繫實習學生，並推進計畫的日常運作，有意了解或參與計畫的學校與同學，歡迎聯繫。
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Annual Reports */}
-      <section className="py-12 md:py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">歷年成果報告</h2>
-            <div className="w-20 h-1 bg-accent mx-auto"></div>
-          </div>
-
-          <div className="space-y-4">
-            {ANNUAL_REPORTS.map((report, i) => (
-              <a
-                key={i}
-                href={report.link}
-                className="flex items-center gap-4 p-5 bg-white rounded-xl border border-gray-100 hover:border-primary hover:shadow-md transition group"
-              >
-                <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 group-hover:text-primary transition">{report.title}</h3>
-                  <p className="text-sm text-gray-400">{report.year} 年度</p>
-                </div>
-                <svg className="w-5 h-5 text-gray-300 group-hover:text-primary transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </a>
-            ))}
-          </div>
-
-          <p className="text-center text-sm text-gray-400 mt-6">
-            報告連結待更新，檔案上傳後即可下載。
-          </p>
-        </div>
-      </section>
+      <TestimonialsSection />
 
       {/* 紀錄片《通道》 */}
       <section className="py-12 md:py-20 bg-gray-warm">
