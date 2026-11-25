@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSheetData } from '../hooks/useSheetData';
 import { fetchNewsItems, safeLinkUrl, isExternalLink } from '../utils/sheets';
 
 export const NewsPage: React.FC = () => {
   const { data: news, loading, error } = useSheetData('news', fetchNewsItems);
+  const [tag, setTag] = useState('');
+  const [keyword, setKeyword] = useState('');
+
+  // 分類選項取自後台「標籤」欄，依出現順序去重
+  const tags = useMemo(() => Array.from(new Set(news.map(n => n.tag).filter(Boolean))), [news]);
+  const filtered = useMemo(() => {
+    const words = keyword.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return news.filter(n => {
+      if (tag && n.tag !== tag) return false;
+      const text = `${n.title} ${n.summary} ${n.tag} ${n.date}`.toLowerCase();
+      return words.every(w => text.includes(w));
+    });
+  }, [news, tag, keyword]);
+  const isFiltering = tag !== '' || keyword.trim() !== '';
+  const chip = (active: boolean) =>
+    `px-4 py-1.5 rounded-full text-sm font-medium border transition ${
+      active ? 'bg-primary text-white border-primary' : 'bg-white text-gray-600 border-gray-200 hover:border-primary hover:text-primary'
+    }`;
 
   return (
     <div>
@@ -32,8 +50,46 @@ export const NewsPage: React.FC = () => {
           )}
 
           {!loading && news.length > 0 && (
+            <div className="mb-8">
+              <div className="relative mb-4">
+                <svg className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                </svg>
+                <input
+                  type="search"
+                  value={keyword}
+                  onChange={e => setKeyword(e.target.value)}
+                  placeholder="輸入關鍵字查詢公告（例如：遴選要點、核定）"
+                  aria-label="關鍵字查詢"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                />
+              </div>
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2" role="group" aria-label="公告分類">
+                  <button type="button" onClick={() => setTag('')} aria-pressed={tag === ''} className={chip(tag === '')}>全部</button>
+                  {tags.map(t => (
+                    <button key={t} type="button" onClick={() => setTag(t)} aria-pressed={tag === t} className={chip(tag === t)}>{t}</button>
+                  ))}
+                </div>
+              )}
+              <p className="text-sm text-gray-500 mt-4" aria-live="polite">
+                {isFiltering ? `查詢結果：共 ${filtered.length} 則` : `共 ${news.length} 則`}
+                {isFiltering && (
+                  <button type="button" onClick={() => { setTag(''); setKeyword(''); }} className="ml-3 text-primary hover:underline">清除條件</button>
+                )}
+              </p>
+            </div>
+          )}
+
+          {!loading && news.length > 0 && filtered.length === 0 && (
+            <div className="p-8 bg-gray-50 rounded-xl border border-gray-200 text-center">
+              <p className="text-gray-600">找不到符合條件的公告，請換個關鍵字或分類。</p>
+            </div>
+          )}
+
+          {!loading && filtered.length > 0 && (
             <div className="space-y-6">
-              {news.map((item, i) => {
+              {filtered.map((item, i) => {
                 const link = safeLinkUrl(item.link);
                 const external = isExternalLink(link);
                 return (
