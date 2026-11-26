@@ -17,9 +17,10 @@ import { HotpotPage } from './pages/HotpotPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { MembersPage } from './pages/MembersPage';
 import { ResultsPage } from './pages/ResultsPage';
+import { EventsPage } from './pages/EventsPage';
 import { trackPageView } from './utils/analytics';
 
-type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange' | 'weekly' | 'join' | 'hotpot' | 'history' | 'members' | 'results';
+type Page = 'home' | 'charter' | 'team' | 'news' | 'promotion' | 'training' | 'media' | 'dairy' | 'tasting' | 'exchange' | 'weekly' | 'join' | 'hotpot' | 'history' | 'members' | 'results' | 'events';
 
 const ROUTE_MAP: Record<string, Page> = {
   '': 'home',
@@ -39,6 +40,7 @@ const ROUTE_MAP: Record<string, Page> = {
   'history': 'history',
   'members': 'members',
   'results': 'results',
+  'events': 'events',
 };
 
 function getPageFromHash(): Page {
@@ -90,6 +92,7 @@ const App: React.FC = () => {
       case 'history': return <HistoryPage />;
       case 'members': return <MembersPage />;
       case 'results': return <ResultsPage />;
+      case 'events': return <EventsPage />;
       case 'charter': return <CharterPage />;
       // 團隊頁暫時隱藏（理監事名單多為待補），內容齊全後改回 <TeamPage />
       case 'team': return <HomePage onNavigate={navigate} />;

@@ -517,3 +517,94 @@ export async function fetchResults(): Promise<YearResults[]> {
   years.forEach(y => { y.kpis.sort((a, b) => a.order - b.order); y.events.sort((a, b) => a.order - b.order); });
   return years.sort((a, b) => b.year.localeCompare(a.year));
 }
+
+// ── 活動報名 ──────────────────────────────────────────────
+// 報名表單本身是 Google 表單（名單彙整、管理、匯出都在表單連結的回覆試算表）；
+// 官網這頁只負責列出「哪些活動開放報名」並導到表單，由後台「活動報名」分頁管理。
+const EVENTS_SHEET_NAME = '活動報名';
+
+export type EventStatus = 'open' | 'soon' | 'closed';
+
+export interface SheetEventItem {
+  name: string;
+  date: string;        // 活動日期（YYYY-MM-DD 或 2026/12/5 皆可）
+  time: string;        // 活動時間，顯示用文字
+  place: string;
+  audience: string;    // 對象
+  quota: string;       // 名額，顯示用文字
+  deadline: string;    // 報名截止日；空白時以活動日期當截止日
+  formUrl: string;     // Google 表單連結；空白＝即將開放報名
+  description: string;
+  image: string;
+  status: EventStatus;
+  statusLabel: string; // 顯示在標籤上的文字
+}
+
+function localToday(): string {
+  // 用瀏覽器本地日期（台灣使用者即台灣時區），不用 toISOString 以免 UTC 差 8 小時跨日
+  const now = new Date();
+  return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+}
+
+export async function fetchEventItems(): Promise<SheetEventItem[]> {
+  const today = localToday();
+  // 這張表用「分頁名稱」取資料。注意 gviz 找不到該名稱時不會報錯，而是默默回傳第一個分頁（最新消息），
+  // 所以下面一定要驗表頭；驗不過就當作沒有活動，不能把別的分頁內容當活動顯示。
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(EVENTS_SHEET_NAME)}&headers=1`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch events');
+  const rows = csvToObjects(await res.text());
+  if (rows.length === 0 || !('活動名稱' in rows[0]) || !('報名表單連結' in rows[0])) return [];
+
+  const items = rows
+    .filter(r => {
+      const v = (r['顯示'] || '').trim().toUpperCase();
+      return v === 'Y' || v === 'TRUE';
+    })
+    .map((r): SheetEventItem => {
+      const date = (r['活動日期'] || '').trim();
+      const deadline = (r['報名截止日'] || '').trim();
+      const formUrl = safeHttpUrl(r['報名表單連結'] || '');
+      const manual = (r['報名狀態'] || '').trim(); // 選填：額滿／延期／取消…填了就關閉報名按鈕
+      const closeDay = normalizeDate(deadline) || normalizeDate(date);
+      let status: EventStatus;
+      let statusLabel: string;
+      if (manual) {
+        status = 'closed';
+        statusLabel = manual;
+      } else if (closeDay && closeDay < today) {
+        status = 'closed';
+        statusLabel = '報名截止';
+      } else if (!formUrl) {
+        status = 'soon';
+        statusLabel = '即將開放報名';
+      } else {
+        status = 'open';
+        statusLabel = '報名中';
+      }
+      return {
+        name: (r['活動名稱'] || '').trim(),
+        date,
+        time: (r['活動時間'] || '').trim(),
+        place: (r['地點'] || '').trim(),
+        audience: (r['對象'] || '').trim(),
+        quota: (r['名額'] || '').trim(),
+        deadline,
+        formUrl,
+        description: r['活動說明'] || '',
+        image: r['圖片網址'] || '',
+        status,
+        statusLabel,
+      };
+    })
+    .filter(e => e.name);
+
+  // 還能報名／即將開放的排前面，活動日愈近愈前；已截止的排後面，最近的在上
+  const rank = (e: SheetEventItem) => (e.status === 'closed' ? 1 : 0);
+  return items.sort((a, b) => {
+    if (rank(a) !== rank(b)) return rank(a) - rank(b);
+    const ad = normalizeDate(a.date);
+    const bd = normalizeDate(b.date);
+    return rank(a) === 0 ? ad.localeCompare(bd) : bd.localeCompare(ad);
+  });
+}

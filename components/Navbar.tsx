@@ -15,7 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const isActive = (page: Page) => currentPage === page;
   const isAboutActive = currentPage === 'history' || currentPage === 'members' || currentPage === 'charter' || currentPage === 'team';
   const isIndustryActive = currentPage === 'weekly' || currentPage === 'exchange';
-  const isLatestActive = currentPage === 'news' || currentPage === 'promotion' || currentPage === 'media' || currentPage === 'hotpot' || currentPage === 'results';
+  const isLatestActive = currentPage === 'news' || currentPage === 'promotion' || currentPage === 'media' || currentPage === 'hotpot' || currentPage === 'results' || currentPage === 'events';
 
   const handleNav = (page: Page) => {
     onNavigate(page);
@@ -108,6 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
               <DropdownLink active={isActive('results')} onClick={() => handleNav('results')}>年度成果</DropdownLink>
               <DropdownLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</DropdownLink>
               <DropdownLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</DropdownLink>
+              <DropdownLink active={isActive('events')} onClick={() => handleNav('events')}>活動報名</DropdownLink>
             </NavDropdown>
 
             {/* 加入我們：招募 CTA，用 accent 金色與其他項目區隔 */}
@@ -161,6 +162,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             <MobileNavLink active={isActive('results')} onClick={() => handleNav('results')}>年度成果</MobileNavLink>
             <MobileNavLink active={isActive('media')} onClick={() => handleNav('media')}>影音媒體</MobileNavLink>
             <MobileNavLink active={isActive('news')} onClick={() => handleNav('news')}>會務新知</MobileNavLink>
+            <MobileNavLink active={isActive('events')} onClick={() => handleNav('events')}>活動報名</MobileNavLink>
             <div className="border-t border-blue-800 my-2"></div>
             <button
               onClick={() => handleNav('join')}
